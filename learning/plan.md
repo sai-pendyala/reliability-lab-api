@@ -57,7 +57,7 @@ Do not use an entire session to watch tutorials. No large unexplained code dumps
 
 ### Parallel DSA track
 
-Two optional 15-minute sessions per week, outside the 60-minute core programme. Use Python and focus on one problem, complexity analysis and brief review. Rotate through arrays/hash maps, strings/two pointers, sliding windows, stacks/queues, binary search, linked lists, trees, heaps, graphs, intervals and mixed interview practice. Skip it during demanding weeks rather than extending the core session.
+Two optional 15-minute sessions per week, outside the 60-minute core programme. Prefer two separated slots: one timed attempt and one review/re-solve. Use Python and focus on one problem, complexity analysis and brief review. Rotate through arrays/hash maps, strings/two pointers, sliding windows, stacks/queues, binary search, linked lists, trees, heaps, graphs, intervals and mixed interview practice. Skip it during demanding weeks rather than extending the core session.
 
 Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode roadmap](https://neetcode.io/roadmap)
 
@@ -207,7 +207,7 @@ Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode
 
 **Resources:** [FastAPI First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/) · [FastAPI response models](https://fastapi.tiangolo.com/tutorial/response-model/)
 
-**Optional +15 min:** Add one query parameter to control the maximum number of returned tasks.
+**Optional +15 min:** Compare the same request with and without an Accept header using curl.
 
 
 #### D9 · 03 Dec 2026 · Path parameters and account lookup
@@ -241,7 +241,7 @@ Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode
 
 **Resources:** [FastAPI query parameters](https://fastapi.tiangolo.com/tutorial/query-params/) · [FastAPI First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/)
 
-**Optional +15 min:** Test combinations of filters and document what happens when no tasks match.
+**Optional +15 min:** Test combinations of filters and document what happens when no account history entries match.
 
 
 #### D11 · 05 Dec 2026 · Pydantic request models and input validation
@@ -374,7 +374,7 @@ Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode
 
 **Resources:** [FastAPI response models](https://fastapi.tiangolo.com/tutorial/response-model/) · [MDN HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status) · [FastAPI First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/)
 
-**Optional +15 min:** Explain the request/response lifecycle for POST /tasks from memory.
+**Optional +15 min:** Explain the request/response lifecycle for POST /transfers from memory.
 
 
 #### D19 · 15 Dec 2026 · Relational data and PostgreSQL foundations
@@ -760,7 +760,7 @@ Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode
 
 **Resources:** [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) · [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
 
-**Optional +15 min:** Explain why stateless sample can scale while SQLite API stays single-replica.
+**Optional +15 min:** Explain why the stateless API can scale while PostgreSQL remains a single-instance stateful service in this learning cluster.
 
 
 #### D42 · 11 Jan 2027 · ConfigMaps, Secrets and configuration safety
