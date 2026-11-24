@@ -3,7 +3,7 @@
 venv/
 env/
 
-# Python cache and build artifacts
+# Python cache and test/build artifacts
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -19,8 +19,24 @@ dist/
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
 
-# macOS / editor files
+# Terraform local state, providers and private variable files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+
+# macOS and editor files
 .DS_Store
 .vscode/
 .idea/
