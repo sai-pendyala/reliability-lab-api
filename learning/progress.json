@@ -15,7 +15,7 @@
     "project_approach": "Start with the request/response model and endpoint contract before implementing routes. Avoid large code dumps; build one endpoint at a time and explain each decision.",
     "project_domain": "Build a simulated double-entry ledger API, not a generic task manager. No real funds or payment rails.",
     "database": "Use PostgreSQL for the main application. SQLite is not part of the application architecture.",
-    "git_and_publishing": "Use local Git during development. Publish source and enable GitHub Actions at the planned source-control/CI milestone, not on Day 1.",
+    "git_and_publishing": "Use local Git during development. Publish source and enable GitHub Actions at the planned source-control/CI milestone, not on Day 1. The public repo currently contains curriculum and learning records only.",
     "observability": "Prometheus and Grafana are core. Structured stdout logs are core. Loki/Alloy and OpenTelemetry/Jaeger are optional extensions.",
     "cloud": "The AWS exercise is temporary and cost-controlled. Never assume a free tier; estimate costs before apply, use minimal resources and verify destroy/cleanup.",
     "interview_practice": "DSA is a separate optional 15-minute side track twice per week; it does not displace the 60-minute core session."
@@ -358,7 +358,7 @@
       ],
       "duration_minutes": 60,
       "extension_minutes": 15,
-      "extension_task": "Test combinations of filters and document what happens when no tasks match.",
+      "extension_task": "Test combinations of filters and document what happens when no account history entries match.",
       "status": "not_started",
       "completed_at": null,
       "notes": "",
@@ -630,7 +630,7 @@
       ],
       "duration_minutes": 60,
       "extension_minutes": 15,
-      "extension_task": "Explain the request/response lifecycle for POST /tasks from memory.",
+      "extension_task": "Explain the request/response lifecycle for POST /transfers from memory.",
       "status": "not_started",
       "completed_at": null,
       "notes": "",
@@ -1410,7 +1410,7 @@
       ],
       "duration_minutes": 60,
       "extension_minutes": 15,
-      "extension_task": "Explain why stateless sample can scale while SQLite API stays single-replica.",
+      "extension_task": "Explain why the stateless API can scale while PostgreSQL remains a single-instance stateful service in this learning cluster.",
       "status": "not_started",
       "completed_at": null,
       "notes": "",
@@ -2752,6 +2752,7 @@
         "name": "NeetCode roadmap",
         "url": "https://neetcode.io/roadmap"
       }
-    ]
+    ],
+    "weekly_schedule": "Use two 15-minute slots per week, preferably separated by a day. Do one timed attempt and one review/re-solve; skip optional slots when the core week is demanding."
   }
 }
