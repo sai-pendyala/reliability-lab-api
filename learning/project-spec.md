@@ -1,202 +1,294 @@
-# Project Specification — reliability-lab-api
+# Project Specification — Ledger API Reliability Lab
 
-## Learning assumptions
+## 1. Purpose
 
-- Assume Python fundamentals are already known. Do not schedule revision of variables, loops, functions, data structures or modules.
-- Assume API development and FastAPI are unfamiliar and must be taught from the request/response model upward.
-- Explain HTTP and API decisions before introducing framework details.
-- Build one endpoint at a time; avoid large code dumps and unexplained scaffolding.
+Build and operate a small, simulated double-entry ledger API that provides a realistic backend domain for learning PostgreSQL, reliability engineering, container operations, Kubernetes, CI/CD, Terraform and SRE practices.
 
-## Project outcome
+The project is intended to develop skills relevant to backend engineering and DevOps/SRE roles. It is a learning system, not a banking product and not a production reference architecture.
 
-Build a small **Task API** using Python, FastAPI and SQLite. Package it with Docker and Compose, deploy it to a local single-node Kubernetes cluster, and practise the full observability loop: Prometheus metrics, structured logs collected by Alloy into Loki, and OpenTelemetry traces viewed in Jaeger. Use Grafana to explore signals, build dashboards and alerts, and investigate incidents.
+**No real money, payment rails, customer information, card data or banking integrations are involved.**
 
-This is a learning service, not a production-ready product.
+## 2. Core outcomes
 
-## Phase 1 — HTTP/API foundations (Week 1)
+By the end of the programme, the learner should be able to:
 
-Set up the project environment only as needed: existing Colima remains the container runtime; create a Python virtual environment; install FastAPI; initialise Git; run a minimal app and open its API docs.
+1. Explain HTTP request/response behaviour and design a clear API contract.
+2. Build a typed FastAPI service with validation and predictable error behaviour.
+3. Model relational data in PostgreSQL and use transactions, constraints, locks and migrations.
+4. Implement atomic double-entry transfers and idempotent request handling.
+5. Test domain logic and API/database behaviour with pytest.
+6. Build and operate the service with Docker and Compose.
+7. Deploy the API and one PostgreSQL instance to a local single-node k3d cluster.
+8. Diagnose Linux process, resource, filesystem, DNS, port and connection failures.
+9. Automate tests and image publishing with GitHub Actions.
+10. Provision and destroy a temporary cloud host using Terraform.
+11. Instrument service metrics, query them with PromQL, build Grafana dashboards and alert on SLO burn.
+12. Investigate incidents, verify recovery and produce concise postmortem reports.
 
-Then learn:
-- Client/server and request/response lifecycle.
-- URL structure, paths, query strings, headers, JSON bodies and response bodies.
-- GET, POST, PATCH and DELETE.
-- Status codes: success, redirects, client errors and server errors.
-- REST resource design and a simple API contract.
+## 3. Domain model and invariants
 
-Use curl and JSONPlaceholder as a mock API to inspect requests and responses. Do not spend time relearning Python syntax or writing standalone Python exercises.
+### Account
 
-## Phase 2 — FastAPI fundamentals (Week 2)
+Suggested fields:
+- `id`: stable UUID
+- `name`: account display name
+- `currency`: three-character currency code
+- `balance_minor`: integer balance in the currency's minor unit
+- timestamps
 
-Create the FastAPI app and add:
-- GET / and GET /about.
-- GET /tasks and GET /tasks/{task_id}.
-- Path and query parameters.
-- Pydantic request models.
-- POST /tasks with JSON input.
-- Explicit response models.
-- Automatic docs at /docs and the OpenAPI document.
+Use integers for money (for example, paise), never floating-point arithmetic. Keep the first version single-currency per transfer; do not implement foreign exchange.
 
-Use an in-memory collection first. Learn what FastAPI validates automatically and what the application must handle itself.
+### Transfer
 
-## Phase 3 — CRUD and API contract (Week 3)
+Suggested fields:
+- `id`: stable transfer identifier
+- `source_account_id` and `destination_account_id`
+- `amount_minor`: positive integer
+- `currency`
+- status and timestamps
+- the idempotency record/reference used for request replay
 
-Implement endpoints progressively:
-- `GET /` — service name and version.
-- `GET /healthz` — process liveness only.
-- `GET /readyz` — readiness; verify access to the data store once the DB exists.
-- `POST /tasks` — create a task.
-- `GET /tasks` — list tasks; optional completed/limit filters.
-- `GET /tasks/{task_id}` — retrieve a task.
-- `PATCH /tasks/{task_id}` — update title/completed state.
-- `DELETE /tasks/{task_id}` — delete a task.
-- `GET /metrics` — add in Week 9.
+### LedgerEntry
 
-Start with in-memory storage. Use appropriate success and error status codes; use 404 for missing tasks, and test validation failures. Keep request and response schemas clear.
+Each successful transfer posts two immutable entries:
+- one debit for the source account
+- one credit for the destination account
 
-## Phase 4 — SQLite persistence (Week 4)
+The debit and credit must have the same absolute amount and currency. The sum of debits and credits for a transfer must balance. Do not edit or delete a posted entry. Reversals, if explored later, should be represented by compensating entries rather than rewriting history.
 
-Refresh only the SQL concepts needed for the project: tables, rows, primary keys, uniqueness, SELECT/INSERT/UPDATE/DELETE. Use SQLite and SQLModel after in-memory CRUD works. Understand the database engine, per-request session, dependency injection, commits and persistence across restarts.
+### IdempotencyRecord
 
-## Phase 5 — tests and maintainable structure (Week 5)
+Persist the `Idempotency-Key` header and a stable fingerprint of the request. Within the chosen scope:
+- An identical retry with the same key returns the original transfer result and does not post a second transfer.
+- Reusing the same key with a different request payload returns a conflict.
+- The key must be protected by a database uniqueness constraint.
+- Do not put idempotency keys or account IDs into metric labels.
 
-Suggested layout:
+## 4. API surface
+
+The first version should remain deliberately small:
+
+| Method | Path | Purpose |
+|---|---|---|
+| POST | `/accounts` | Create an account |
+| GET | `/accounts` | List accounts |
+| GET | `/accounts/{account_id}` | Retrieve account and current balance |
+| GET | `/accounts/{account_id}/entries` | Retrieve a paginated immutable ledger history |
+| POST | `/transfers` | Create a transfer; requires `Idempotency-Key` |
+| GET | `/transfers/{transfer_id}` | Retrieve a posted transfer |
+| GET | `/healthz` | Process liveness |
+| GET | `/readyz` | Application and database readiness |
+| GET | `/metrics` | Prometheus metrics, added later |
+
+Do not add PATCH or DELETE operations for posted transfers or ledger entries. Account updates, authentication, authorisation, FX, fees, reconciliation and real payment integration are outside the core scope.
+
+### Error behaviour to define and test
+
+- malformed request or non-positive amount
+- unknown account
+- source and destination are the same
+- currency mismatch
+- insufficient funds
+- idempotency key reused with a different payload
+- unexpected database or application failure
+
+Choose HTTP status codes deliberately and keep the response body consistent. Do not reveal internal database details or secrets in errors.
+
+## 5. Database architecture — PostgreSQL
+
+PostgreSQL is the only application database in the core project. SQLite is not part of this architecture.
+
+Use SQLModel/SQLAlchemy with PostgreSQL and a supported PostgreSQL driver. Use Alembic for schema migrations.
+
+Core learning topics:
+- tables, primary/foreign keys, unique constraints and indexes
+- request-scoped sessions and transaction boundaries
+- atomic transfer posting
+- rollback on any failed step
+- unique idempotency keys and request fingerprints
+- transaction isolation and row-level locking
+- test database isolation and migration upgrade/downgrade
+
+A transfer must be processed as one database transaction. Record the transfer, debit entry, credit entry and balance changes together. If any operation fails, roll back all of them. Use a consistent account-lock ordering or an appropriate database strategy to reduce deadlock risk. Test competing transfers so an account cannot become overdrawn because of a race.
+
+The initial schema may keep a cached account balance for practical API responses, provided it is updated in the same transaction as the immutable ledger entries and the tests prove the invariant. Document that design choice.
+
+## 6. Application structure and quality
+
+Keep the application small and readable. A possible structure as it grows:
+
 ```text
-reliability-lab-api/
-  app/
-    __init__.py
-    main.py
-    database.py
-    models.py
-    schemas.py
-    routers/
-      __init__.py
-      tasks.py
-  tests/
-    test_tasks.py
-    test_api.py
-  requirements.txt
-  .gitignore
-  .env.example
-  README.md
+app/
+  main.py
+  api/
+    routes/
+  schemas/
+  models/
+  services/
+  db/
+tests/
+alembic/
 ```
 
-Use pytest and FastAPI TestClient. Keep a separate test database. Test CRUD, validation failures, missing IDs and error responses. Add simple logging and environment-based configuration. Migrations, auth, async database access and complex architecture are out of scope.
+Do not create empty layers without a use. Keep route handlers thin, put transfer rules in a testable service/domain function and keep database operations explicit.
 
-## Docker deliverables (Week 6)
+Required quality work:
+- Pydantic request/response schemas
+- pytest unit tests for domain rules
+- FastAPI TestClient endpoint tests
+- PostgreSQL integration tests against an isolated test database
+- rollback and duplicate-idempotency tests
+- configuration through environment variables
+- structured logs without sensitive information
+- `/healthz` and database-aware `/readyz`
 
-- Dockerfile using an official Python base image.
-- .dockerignore, compose.yaml and .env.example with fake values only.
-- Persistent named volume mounted at /data.
-- Health check and repeatable build/start instructions.
-- At least one user-defined bridge/Compose network exercise: service-name DNS, container-to-container connectivity and host-published ports.
-- A troubleshooting note with evidence and fixes for startup, port, environment, volume and network errors.
+## 7. Docker and Compose
 
-Use the current FastAPI Docker documentation; do not use the deprecated tiangolo/uvicorn-gunicorn-fastapi image.
+Build the API image using a small supported Python base image, a clear start command, a non-root user where practical and a `.dockerignore`.
 
-## Kubernetes deliverables (Weeks 7–8)
+Compose should run:
+- the Ledger API
+- one PostgreSQL service
+- an internal application/database network
+- a named PostgreSQL data volume
+- appropriate health checks and configuration
 
-- k8s/namespace.yaml
-- k8s/deployment.yaml
-- k8s/service.yaml
-- k8s/configmap.yaml
-- k8s/pvc.yaml if the local provisioner works within the memory/time budget.
-- k8s/rbac.yaml
+Prove service-name DNS, host-published port behaviour, database persistence across container replacement and safe teardown without deleting the data volume unintentionally.
 
-Use one k3d server node through existing Colima. Keep the SQLite API at **one replica**; do not share a SQLite file across multiple API replicas. Use a separate stateless sample (e.g. Nginx) for scaling and rolling-update exercises. Configure probes and CPU/memory requests/limits. Example Secret values must be fake; never commit real credentials.
+PostgreSQL must not be exposed publicly. Do not commit real database passwords.
 
-Practise each major Kubernetes object in a disposable browser cluster and then adapt it locally. The browser lab is repetition/practice; local manifests and evidence in this repository remain the source of truth.
+## 8. Kubernetes with k3d
 
-## Observability deliverables (Weeks 9–10)
+Use the existing Colima runtime and one local k3d server node. Deploy:
+- the API as a Deployment (stateless; may scale to two replicas for practice)
+- PostgreSQL as one StatefulSet/instance with a PersistentVolumeClaim for the learning exercise
+- ClusterIP Services for internal communication
+- ConfigMaps for non-sensitive settings and fake Secrets for disposable credentials
+- liveness/readiness/startup probes where appropriate
+- modest CPU/memory requests and limits
+- a least-privilege ServiceAccount/Role/RoleBinding exercise
 
-Treat observability as three complementary signals, not metrics alone.
+Keep PostgreSQL at one instance. The local PVC is not a backup or HA design. Practise `pg_dump` and restore separately. Do not share one PostgreSQL data directory between multiple Pods.
 
-### Metrics — Prometheus
-- Expose bounded metrics with prometheus-client:
-  - HTTP requests total (Counter), labels method, route template and status code.
-  - HTTP request duration (Histogram), labels method and route template.
-  - Readiness/dependency failures where useful.
-- Scrape the API at 15–30 seconds.
-- Write PromQL for request rate, 5xx/error rate, latency histogram quantiles and target health.
-- Add one recording rule and useful alert rules.
+The cluster is a learning topology only. Do not describe it as production-ready.
 
-Do not label with task IDs, user IDs, arbitrary URL paths, query strings or other unbounded values.
+## 9. Linux and networking troubleshooting
 
-### Logs — structured stdout, Alloy and Loki
-- Emit useful structured application logs to stdout, including timestamp, severity, service name and request context.
-- When tracing is active, include trace_id and span_id in log content where practical; keep these as log content, not Loki index labels.
-- Use Grafana Alloy to collect container logs and send them to Loki.
-- Query logs through Grafana with a small set of LogQL examples, including filtering error events.
-- Avoid high-cardinality log labels; keep variable values in log content rather than labels.
-- Use the getting-started stack in grafana/loki-fundamentals as the local learning stack. Run it by itself and stop it after the exercise.
+Use a disposable Linux container or browser lab for destructive exercises. Practise evidence-led diagnosis of:
+- process and CPU/memory problems (`ps`, `top`)
+- disk capacity and inode exhaustion (`df -h`, `df -i`)
+- ownership and permission errors
+- port conflicts and listening sockets (`ss`, `lsof`)
+- DNS lookup failures (`dig`, `getent`)
+- connection refused vs timeout vs name-resolution failure
+- service/container logs and startup failures
 
-### Traces — OpenTelemetry and Jaeger
-- Add basic OpenTelemetry instrumentation to the FastAPI service using the [OpenTelemetry FastAPI instrumentation guide](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi).
-- Export OTLP traces to a local Jaeger all-in-one instance.
-- Generate requests and inspect trace IDs, spans, parent/child relationships and request duration.
-- Keep the learning scope to a single FastAPI service. Distributed microservices and production collector architecture are out of scope.
-- Read the OpenTelemetry Astronomy Shop demo for architectural context only; do not run its full stack on this 8 GB Mac.
+Collect evidence before changing configuration. Record symptom, commands, evidence, likely cause, fix and verification.
 
-### Grafana and SRE
-- Connect Grafana to Prometheus, Loki and Jaeger; validate each backend separately if machine resources do not permit running them together.
-- Build dashboard panels for request rate, 5xx rate/percentage, latency and target availability.
-- Practise moving from a time window/alert to relevant logs and traces. Add an incident annotation. As an optional stretch, configure Grafana trace-to-logs correlation using trace IDs in log content.
-- Create a useful alert and document firing, pending, recovery and no-data behaviour.
-- Define an illustrative learning-only availability and latency SLI/SLO, state the measurement window and calculate a simple error budget.
-- State clearly that a small local lab is not production reliability evidence.
+## 10. Git, CI/CD and container publishing
 
-## Free browser labs and GitHub references
+The project should use a practical Git change workflow: inspect status/diff, work on a focused branch, commit coherent changes, review and merge. Publishing the application source to the public repository happens at the planned source-control milestone, not in the initial environment session.
 
-Use short browser-based practice before the local exercise where available. These are free/public learning resources; the local project is still required.
+GitHub Actions should:
+1. run on pushes and pull requests
+2. set up the chosen Python version
+3. start PostgreSQL as a workflow service for integration tests
+4. install dependencies and run pytest
+5. run Ruff lint/format checks
+6. build the Docker image after successful quality checks
+7. publish a versioned image to GHCR with minimal `GITHUB_TOKEN` permissions
 
-- [Killercoda Docker scenarios](https://killercoda.com/docker) and [Killercoda playlabs](https://killercoda.com/playlabs) for disposable browser Docker environments.
-- [Play with Docker Classroom](https://training.play-with-docker.com/) for browser-based Docker tutorials.
-- [Killercoda Kubernetes scenarios](https://killercoda.com/kubernetes) and [Kubernetes playground](https://killercoda.com/playgrounds/scenario/kubernetes) for Pods, Deployments, Services and kubectl practice.
-- [Grafana Play](https://play.grafana.org/) for public sample dashboards and exploration.
-- [Grafana trace investigation walkthrough](https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/) for guided trace investigation.
-- [Grafana Jaeger data source](https://grafana.com/docs/grafana/latest/datasources/jaeger/) for trace exploration.
-- [Loki tutorial and interactive quickstart](https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/) for browser-based log exploration.
-- [grafana/loki-fundamentals](https://github.com/grafana/loki-fundamentals) for the small local Loki + Alloy + Grafana stack.
-- [OpenTelemetry Python instrumentation](https://opentelemetry.io/docs/languages/python/instrumentation/) and [OpenTelemetry FastAPI instrumentation](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi); [Jaeger Getting Started](https://www.jaegertracing.io/docs/latest/getting-started/) for tracing.
-- [OpenTelemetry Demo](https://github.com/open-telemetry/opentelemetry-demo) as a public code/architecture reference only.
+A later deployment workflow should be manually gated and use least-privilege short-lived identity. Prefer GitHub Actions OIDC with AWS IAM/Systems Manager rather than storing long-lived AWS access keys. If that scope is too large, document the manual release and do not weaken credential handling to make automation appear complete.
 
-Killercoda's free tier allows one hour per scenario and environments are ephemeral. Never enter production credentials, access tokens or personal data. Public demo data can change or reset. Save all manifests, commands, notes and evidence locally.
+## 11. Infrastructure as code and temporary AWS deployment
 
-## Incident exercises
+Use Terraform to create a small temporary EC2 learning host and the minimum network/access resources needed. Deploy the API and PostgreSQL on that host using Docker Compose.
 
-Complete and document all three controlled incidents. Do not treat them as optional alternatives:
+This is intentionally a **single-host deployment**, not a highly available cloud architecture. It demonstrates provisioning, Linux operations, container deployment, network boundaries, cloud logs, controlled rollout and cleanup. It does not demonstrate production database HA or autoscaling.
 
-1. **Target unavailable (Week 10 / D54):** stop the API or make its scrape target unavailable. Detect it from target health/alerting, record evidence, restore the service and verify recovery.
-2. **Elevated HTTP 5xx (Week 10 / D57):** introduce a temporary local-only fault. Detect it from the alert/dashboard, inspect logs and traces, restore normal behaviour and verify recovery. Revert the fault injection immediately.
-3. **Elevated latency (Week 10 / D59):** introduce a temporary local-only delay. Find it using the latency histogram and trace, use logs for context, restore normal latency and verify recovery.
+Required safeguards:
+- do not assume AWS free-tier eligibility or zero cost
+- estimate resource costs before provisioning
+- select region and instance size only after reviewing the estimate
+- restrict SSH/admin ingress to the learner's IP or use Systems Manager
+- never expose PostgreSQL publicly
+- avoid NAT gateways, load balancers, RDS and EKS for this small exercise
+- set a time/spend limit
+- keep credentials and Terraform state out of the public repository
+- run `terraform destroy` and verify the instance, volumes, public IP and other resources are removed
 
-For each incident document detection, timeline, evidence, root cause, mitigation, verification and prevention. Save the reports as incidents/incident-01-target-unavailable.md, incidents/incident-02-http-5xx.md and incidents/incident-03-high-latency.md. Keep all fault injection local and temporary; do not commit a deliberately broken configuration as the final state.
+If the learner does not have an AWS account or does not approve potential charges, complete the Terraform plan and a local deployment simulation, mark the real-cloud outcome as deferred, and do not create resources.
 
-## Browser and local lab method
+## 12. Observability and SRE
 
-For each D31–D71 session, use a short online exercise (about 10–15 minutes inside the guided-practice block) when one is available, then reproduce the main concept locally (about 30 minutes in the build block) and save the result. Keep the existing 10-minute reading and 5-minute notes blocks so the day remains 60 minutes. Do not try to finish a full online course in one session. If a browser lab is unavailable, use its linked official documentation and complete the local exercise.
+### Core: Prometheus and Grafana
 
-## Mac/Colima guardrails
+Instrument:
+- request count
+- request duration histogram
+- transfer success/failure counts with bounded outcome labels
 
-- Reuse the existing Colima Docker runtime; do not install Docker Desktop for this programme.
-- Use one single-server k3d cluster, not a multi-node local cluster.
-- The machine has 8 GB RAM. Run only the components needed for the current session and stop unused Compose stacks/cluster before switching subjects.
-- Run the small Loki + Alloy + Grafana Compose learning stack for the logs exercise, and one Jaeger container for traces. Test these separately from Kubernetes when memory is tight.
-- Keep Prometheus scrape intervals around 15–30 seconds and avoid extra exporters unless memory permits.
-- Do not run the full OpenTelemetry Astronomy Shop demo locally; inspect its public GitHub code/architecture only.
-- Never use real credentials or production data in browser labs or disposable local exercises.
+Never label metrics with account IDs, transfer IDs, request IDs, idempotency keys or other unbounded values.
 
-## Consolidation and independent practice (Weeks 11–12)
+Configure Prometheus scraping and write PromQL for:
+- request rate
+- 5xx ratio
+- transfer failure ratio
+- latency histogram quantiles
+- target availability
 
-These weeks add practice depth, not additional platforms.
+Use Grafana for dashboards and alert investigation.
 
-- **Week 11 (D60–D65):** core project checkpoint; rebuild Docker/Compose from a clean state; troubleshoot network and volume faults; deploy Kubernetes from clean manifests; diagnose planted failures; repeat rollout/rollback and RBAC operations independently.
-- **Week 12 (D66–D71):** independently investigate Prometheus metrics, Loki logs and OpenTelemetry traces; review Grafana dashboard/alert/SLO quality; run an unscripted local incident drill; complete the final capstone and portfolio README.
+### SLI, SLO and burn-rate work
 
-Required additional artefacts include clean-state Docker and Kubernetes runbooks, network/volume and Kubernetes failure records, a PromQL investigation sheet, LogQL queries, two annotated Jaeger traces, updated Grafana dashboard/alert exports, an additional incident exercise/tabletop report, and a reproducible capstone walkthrough.
+Define learning-only availability and latency SLIs, choose explicit SLO targets and a measurement window, calculate the error budget and implement a multi-window burn-rate alert. Explain how a fast burn differs from a slow sustained burn and why low traffic can make request-ratio alerts noisy.
 
-## Completion criteria
+The values are instructional. Do not claim the short lab's uptime proves production reliability. Use the [Google SRE Workbook: alerting on SLOs](https://sre.google/workbook/alerting-on-slos/) as the reference for multi-window, multi-burn-rate thinking.
 
-You can explain HTTP and REST resources; build and test CRUD endpoints without copying a complete solution; persist data and test the API; build/run/debug a container; explain bridge networking and service-name DNS; deploy/update/roll back in Kubernetes; diagnose Pod failures from events and logs; instrument/query Prometheus metrics; collect/query structured logs with Alloy and Loki; instrument/inspect traces with OpenTelemetry and Jaeger; use Grafana for dashboards and alert investigation; and complete three required documented incident drills plus an independent fourth exercise (target unavailable, elevated HTTP 5xx and elevated latency). You can also complete free browser labs and reproduce the key learning locally.
+### Logs and traces — optional extensions
 
-A working artefact and ability to explain it count as completion. Reading a page alone does not.
+Core logging is structured application output to stdout plus reading Docker, Kubernetes and cloud logs.
+
+Optional additions:
+- **Loki/Alloy:** collect container logs and explore LogQL.
+- **OpenTelemetry/Jaeger:** instrument one service and inspect traces/spans.
+
+Choose one extension first; stop it after the lab. Do not run every observability backend together on the 8 GB Mac.
+
+## 13. Incident exercises
+
+All fault injection is local or in the temporary isolated cloud lab, reversible and followed by verification. Never leave a deliberately broken configuration as the final state.
+
+Required incidents:
+1. **Target unavailable:** stop the API or database; detect, restore and prove recovery.
+2. **Elevated HTTP 5xx:** inject a temporary transfer failure; inspect metrics/logs and prove ledger invariants remain intact.
+3. **Elevated latency:** cause a controlled slow operation; diagnose using latency metrics, application logs and database evidence.
+4. **Independent drill:** select a safe scenario such as duplicate transfer, database outage, bad deployment or network failure; investigate without a step-by-step guide.
+
+Each report includes impact, detection, timeline, evidence, root cause, mitigation, recovery verification and prevention/follow-up actions.
+
+## 14. Hardware and resource limits
+
+The development machine is an Apple Silicon Mac with 8 GB RAM. Use Colima; do not install Docker Desktop for this programme.
+
+- one-node k3d cluster
+- one PostgreSQL instance
+- modest Prometheus scrape frequency (about 15–30 seconds)
+- Prometheus/Grafana as the required observability core
+- Loki/Alloy or Jaeger as separate optional exercises
+- no full OpenTelemetry demo stack locally
+
+The temporary AWS environment is cost-controlled, and the cleanup session is mandatory.
+
+## 15. Explicitly out of scope for this 12-week programme
+
+- real payment gateways or real funds
+- authentication/authorisation suitable for real customers
+- foreign exchange, fees, reconciliation and regulatory controls
+- production database high availability or multi-region deployment
+- Kubernetes control-plane administration or production EKS
+- a full enterprise GitOps platform
+- Go language fundamentals (possible next phase after the core programme)
+- mastery of every observability backend
+
+The goal is a demonstrable learning project with defensible engineering decisions, tests, dashboards, incident reports and honest limitations.
