@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "programme": "Twelve-week API Foundations, Platform & Reliability Engineering",
+  "programme": "Twelve-week Ledger API, Platform & Reliability Engineering",
   "project": "reliability-lab-api",
   "timezone": "Asia/Kolkata",
   "start_date": "2026-11-24",
@@ -12,7 +12,13 @@
     "container_runtime": "Reuse existing Colima Docker runtime.",
     "daily_target_minutes": 60,
     "optional_extensions": "Selected sessions include an optional 15-minute stretch; never required.",
-    "project_approach": "Start with the request/response model and endpoint contract before implementing routes. Avoid large code dumps; build one endpoint at a time and explain each decision."
+    "project_approach": "Start with the request/response model and endpoint contract before implementing routes. Avoid large code dumps; build one endpoint at a time and explain each decision.",
+    "project_domain": "Build a simulated double-entry ledger API, not a generic task manager. No real funds or payment rails.",
+    "database": "Use PostgreSQL for the main application. SQLite is not part of the application architecture.",
+    "git_and_publishing": "Use local Git during development. Publish source and enable GitHub Actions at the planned source-control/CI milestone, not on Day 1.",
+    "observability": "Prometheus and Grafana are core. Structured stdout logs are core. Loki/Alloy and OpenTelemetry/Jaeger are optional extensions.",
+    "cloud": "The AWS exercise is temporary and cost-controlled. Never assume a free tier; estimate costs before apply, use minimal resources and verify destroy/cleanup.",
+    "interview_practice": "DSA is a separate optional 15-minute side track twice per week; it does not displace the 60-minute core session."
   },
   "cadence": {
     "daily_minutes": 60,
@@ -80,9 +86,9 @@
       "week": 1,
       "day_in_week": 2,
       "date": "2026-11-25",
-      "title": "HTTP request and response anatomy",
-      "objective": "Understand client, server, request line, URL, headers, body, response status, headers and body; inspect real requests using curl and browser developer tools.",
-      "deliverable": "A labelled request/response example for GET /tasks and POST /tasks, showing method, path, headers, JSON body and response.",
+      "title": "HTTP request and response anatomy for account and transfer APIs",
+      "objective": "Understand client/server request and response anatomy using GET /accounts and POST /transfers; identify method, path, headers, body, status and JSON response.",
+      "deliverable": "A labelled request/response example for account lookup and transfer creation, including the Idempotency-Key header.",
       "resources": [
         {
           "name": "MDN HTTP overview",
@@ -100,8 +106,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Understand client, server, request line, URL, headers, body, response status, headers and body",
-        "inspect real requests using curl and browser developer tools."
+        "Identify client, server, request line, URL, headers, body and response fields",
+        "Use curl to inspect a GET /accounts request and response",
+        "Inspect a POST /transfers example with JSON and an idempotency header",
+        "Label success and error response status lines"
       ]
     },
     {
@@ -110,8 +118,8 @@
       "day_in_week": 3,
       "date": "2026-11-26",
       "title": "URLs, routes, headers and JSON",
-      "objective": "Understand scheme, host, port, path and query string; distinguish request headers from JSON body; inspect JSON responses and content types.",
-      "deliverable": "A short note explaining the parts of a URL and two curl examples showing headers and JSON responses.",
+      "objective": "Understand scheme, host, port, path and query string; distinguish path/query parameters, headers and JSON body; inspect content type and accept headers.",
+      "deliverable": "A URL anatomy note and two curl examples showing request headers and JSON responses.",
       "resources": [
         {
           "name": "MDN HTTP overview",
@@ -129,9 +137,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Understand scheme, host, port, path and query string",
-        "distinguish request headers from JSON body",
-        "inspect JSON responses and content types."
+        "Label the components of an API URL",
+        "Compare path parameters with query parameters",
+        "Inspect Content-Type, Accept and Idempotency-Key headers",
+        "Use curl to request and inspect JSON"
       ]
     },
     {
@@ -139,17 +148,17 @@
       "week": 1,
       "day_in_week": 4,
       "date": "2026-11-27",
-      "title": "HTTP methods and API actions",
-      "objective": "Map GET, POST, PATCH and DELETE to read/create/partial-update/delete operations; inspect safe and idempotent behaviour at a practical level.",
-      "deliverable": "A method-to-action table for the Task API and curl examples for GET and POST against a public test API.",
+      "title": "HTTP methods, transfer actions and idempotency",
+      "objective": "Map GET and POST to account and transfer resources; understand why posted ledger transfers are immutable and why POST retries need application-level idempotency.",
+      "deliverable": "A method-to-action table for the Ledger API, including safe retries and operations that must not edit or delete posted transfers.",
       "resources": [
         {
           "name": "MDN HTTP methods",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
         },
         {
-          "name": "JSONPlaceholder test API",
-          "url": "https://jsonplaceholder.typicode.com/"
+          "name": "Stripe idempotent requests explanation",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
         }
       ],
       "duration_minutes": 60,
@@ -159,8 +168,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Map GET, POST, PATCH and DELETE to read/create/partial-update/delete operations",
-        "inspect safe and idempotent behaviour at a practical level."
+        "Map GET /accounts, GET /accounts/{id}, GET /transfers/{id} and POST /transfers",
+        "Distinguish safe and idempotent HTTP methods",
+        "Explain why a transfer POST is not automatically idempotent",
+        "Explain why a posted ledger entry is not updated or deleted"
       ]
     },
     {
@@ -168,17 +179,17 @@
       "week": 1,
       "day_in_week": 5,
       "date": "2026-11-28",
-      "title": "HTTP status codes and error responses",
-      "objective": "Understand 2xx success, 3xx redirection, 4xx client errors and 5xx server errors; distinguish 400, 401, 403, 404, 405, 409, 422 and 500.",
-      "deliverable": "A status-code decision table for Task API success, validation failure, missing task and unexpected server error.",
+      "title": "HTTP status codes and financial API errors",
+      "objective": "Understand success, client and server status groups; map validation, missing account, insufficient funds, duplicate idempotency key and unexpected failures to useful statuses.",
+      "deliverable": "A status-code decision table for account and transfer operations.",
       "resources": [
         {
           "name": "MDN HTTP status codes",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
         },
         {
-          "name": "FastAPI response status codes",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
         }
       ],
       "duration_minutes": 60,
@@ -188,8 +199,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Understand 2xx success, 3xx redirection, 4xx client errors and 5xx server errors",
-        "distinguish 400, 401, 403, 404, 405, 409, 422 and 500."
+        "Review 2xx, 4xx and 5xx status groups",
+        "Choose responses for invalid input and missing accounts",
+        "Distinguish insufficient funds from unexpected server failure",
+        "Choose a conflict response for reusing an idempotency key with a different payload"
       ]
     },
     {
@@ -197,9 +210,9 @@
       "week": 2,
       "day_in_week": 1,
       "date": "2026-11-30",
-      "title": "REST resource design and API contract",
-      "objective": "Design the Task resource and endpoint set; distinguish path parameters, query parameters and request bodies; decide what each endpoint returns before implementing it.",
-      "deliverable": "api-contract.md with method, path, purpose, example request, example response and expected status for each endpoint.",
+      "title": "Ledger API resource design and contract",
+      "objective": "Design Account, Transfer and LedgerEntry resources; define account creation, account lookup, transaction history and transfer creation before implementation.",
+      "deliverable": "ledger-api-contract.md with methods, paths, request/response examples, status codes and idempotency behaviour.",
       "resources": [
         {
           "name": "MDN HTTP methods",
@@ -214,8 +227,12 @@
           "url": "https://fastapi.tiangolo.com/tutorial/query-params/"
         },
         {
-          "name": "JSONPlaceholder test API",
-          "url": "https://jsonplaceholder.typicode.com/"
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "Stripe idempotent requests explanation",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
         }
       ],
       "duration_minutes": 60,
@@ -225,9 +242,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Design the Task resource and endpoint set",
-        "distinguish path parameters, query parameters and request bodies",
-        "decide what each endpoint returns before implementing it."
+        "Define Account, Transfer and LedgerEntry fields",
+        "Design POST /accounts and GET /accounts",
+        "Design GET /accounts/{account_id} and GET /accounts/{account_id}/entries",
+        "Design POST /transfers and GET /transfers/{transfer_id}",
+        "Specify Idempotency-Key header and error cases"
       ]
     },
     {
@@ -236,8 +255,8 @@
       "day_in_week": 2,
       "date": "2026-12-01",
       "title": "FastAPI routes and interactive documentation",
-      "objective": "Read the small app created in Week 1; understand the FastAPI app instance and route decorator; add GET / and GET /about; inspect /docs and /openapi.json.",
-      "deliverable": "A minimal app with two working GET endpoints and readable JSON responses.",
+      "objective": "Understand the FastAPI application instance and route decorator; inspect the existing root endpoint and add a health/about endpoint before implementing ledger routes.",
+      "deliverable": "A minimal app with root and health/about endpoints visible in /docs and /openapi.json.",
       "resources": [
         {
           "name": "FastAPI First Steps",
@@ -251,10 +270,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Read the small app created in Week 1",
-        "understand the FastAPI app instance and route decorator",
-        "add GET / and GET /about",
-        "inspect /docs and /openapi.json."
+        "Read the small app created on Day 1",
+        "Explain FastAPI app instance and route decorator",
+        "Add GET /healthz or GET /about",
+        "Inspect /docs and /openapi.json"
       ]
     },
     {
@@ -262,17 +281,17 @@
       "week": 2,
       "day_in_week": 3,
       "date": "2026-12-02",
-      "title": "GET endpoints and response data",
-      "objective": "Create GET /tasks returning a list; start with a small in-memory collection; use curl and Swagger UI to inspect the response JSON.",
-      "deliverable": "GET /tasks returns a predictable JSON list and an empty-list case.",
+      "title": "GET endpoints and account response data",
+      "objective": "Create GET /accounts with a small in-memory account collection; return stable identifiers, currency and integer minor-unit balances.",
+      "deliverable": "GET /accounts returns a predictable JSON list and an empty-list case.",
       "resources": [
         {
           "name": "FastAPI First Steps",
           "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
         },
         {
-          "name": "MDN HTTP overview",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         }
       ],
       "duration_minutes": 60,
@@ -282,9 +301,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create GET /tasks returning a list",
-        "start with a small in-memory collection",
-        "use curl and Swagger UI to inspect the response JSON."
+        "Create a small in-memory list of sample accounts",
+        "Implement GET /accounts",
+        "Return amount fields as integer minor units, not floating-point values",
+        "Inspect responses with curl and Swagger UI"
       ]
     },
     {
@@ -292,9 +312,9 @@
       "week": 2,
       "day_in_week": 4,
       "date": "2026-12-03",
-      "title": "Path parameters",
-      "objective": "Create GET /tasks/{task_id}; use an integer path parameter; test valid, missing and invalid ID formats; observe FastAPI validation.",
-      "deliverable": "A detail endpoint that returns the requested task and a clear not-found response.",
+      "title": "Path parameters and account lookup",
+      "objective": "Create GET /accounts/{account_id}; use a typed path parameter; test valid, missing and malformed IDs and return a clear not-found response.",
+      "deliverable": "An account detail endpoint with correct success and not-found behaviour.",
       "resources": [
         {
           "name": "FastAPI path parameters",
@@ -312,10 +332,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create GET /tasks/{task_id}",
-        "use an integer path parameter",
-        "test valid, missing and invalid ID formats",
-        "observe FastAPI validation."
+        "Implement GET /accounts/{account_id}",
+        "Use a UUID or integer identifier consistently",
+        "Test an existing account ID",
+        "Test an unknown ID and an invalid ID format"
       ]
     },
     {
@@ -323,13 +343,17 @@
       "week": 2,
       "day_in_week": 5,
       "date": "2026-12-04",
-      "title": "Query parameters and filtering",
-      "objective": "Add optional query parameters such as completed and limit; filter the in-memory task list; understand defaults and optional values.",
-      "deliverable": "GET /tasks supports a completion filter and limit with documented examples.",
+      "title": "Query parameters and ledger-entry history",
+      "objective": "Add pagination to GET /accounts/{account_id}/entries; understand limit/offset or cursor parameters and stable ordering for financial history.",
+      "deliverable": "An account history endpoint with bounded pagination and documented examples.",
       "resources": [
         {
           "name": "FastAPI query parameters",
           "url": "https://fastapi.tiangolo.com/tutorial/query-params/"
+        },
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
         }
       ],
       "duration_minutes": 60,
@@ -339,9 +363,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Add optional query parameters such as completed and limit",
-        "filter the in-memory task list",
-        "understand defaults and optional values."
+        "Add limit and offset query parameters",
+        "Return ledger entries in stable chronological order",
+        "Test first page, next page and no matching entries",
+        "Document pagination defaults and maximums"
       ]
     },
     {
@@ -349,13 +374,17 @@
       "week": 2,
       "day_in_week": 6,
       "date": "2026-12-05",
-      "title": "Request bodies and Pydantic models",
-      "objective": "Create a TaskCreate Pydantic model; accept JSON in POST /tasks; try valid and invalid payloads; inspect validation errors.",
-      "deliverable": "POST /tasks accepts a validated JSON request body and returns the created task.",
+      "title": "Pydantic request models and input validation",
+      "objective": "Create input models for account creation and transfer requests; validate names, currency codes, account IDs and positive integer minor-unit amounts.",
+      "deliverable": "Validated request models with accepted and rejected payload examples.",
       "resources": [
         {
           "name": "FastAPI request body",
           "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         }
       ],
       "duration_minutes": 60,
@@ -365,10 +394,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create a TaskCreate Pydantic model",
-        "accept JSON in POST /tasks",
-        "try valid and invalid payloads",
-        "inspect validation errors."
+        "Create an AccountCreate model",
+        "Create a TransferCreate model",
+        "Represent money as integer minor units, for example paise",
+        "Reject non-positive amounts and malformed currency codes",
+        "Inspect FastAPI validation errors"
       ]
     },
     {
@@ -376,17 +406,17 @@
       "week": 3,
       "day_in_week": 1,
       "date": "2026-12-07",
-      "title": "Response models and validation",
-      "objective": "Create a TaskResponse model; define fields returned by the API; distinguish input schema and output schema; inspect the generated OpenAPI docs.",
-      "deliverable": "Task endpoints use explicit response models and return a consistent JSON shape.",
+      "title": "Response models and money representation",
+      "objective": "Create explicit response schemas for accounts, transfers and ledger entries; separate input, database and output shapes; avoid exposing internal idempotency data.",
+      "deliverable": "Consistent response models with clear account balance and transfer representations.",
       "resources": [
         {
           "name": "FastAPI response models",
           "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         },
         {
-          "name": "FastAPI First Steps",
-          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
         }
       ],
       "duration_minutes": 60,
@@ -396,10 +426,10 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create a TaskResponse model",
-        "define fields returned by the API",
-        "distinguish input schema and output schema",
-        "inspect the generated OpenAPI docs."
+        "Create AccountRead, TransferRead and LedgerEntryRead schemas",
+        "Separate request models from response models",
+        "Use integer minor units and an explicit currency field",
+        "Inspect generated OpenAPI schemas"
       ]
     },
     {
@@ -407,13 +437,21 @@
       "week": 3,
       "day_in_week": 2,
       "date": "2026-12-08",
-      "title": "Pydantic request models",
-      "objective": "Create a TaskCreate model; accept a JSON body in POST /tasks; try valid and invalid payloads; read validation errors.",
-      "deliverable": "POST /tasks accepts a validated request body.",
+      "title": "Transfer request headers and idempotency contract",
+      "objective": "Accept an Idempotency-Key header on POST /transfers; understand key scope, replay behaviour and conflict behaviour when the same key is reused with a different payload.",
+      "deliverable": "A documented POST /transfers request/response example with Idempotency-Key and retry semantics.",
       "resources": [
+        {
+          "name": "Stripe idempotent requests explanation",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        },
         {
           "name": "FastAPI request body",
           "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
         }
       ],
       "duration_minutes": 60,
@@ -421,16 +459,23 @@
       "extension_task": null,
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Read the idempotency reference",
+        "Add an Idempotency-Key header parameter",
+        "Define what an identical retry should return",
+        "Define what a changed payload with the same key should return",
+        "Keep keys out of metric labels and logs"
+      ]
     },
     {
       "id": "D14",
       "week": 3,
       "day_in_week": 3,
       "date": "2026-12-09",
-      "title": "Create and list tasks",
-      "objective": "Implement POST /tasks and GET /tasks using an in-memory list and generated IDs; return 201 on creation.",
-      "deliverable": "Create/list flow demonstrated with at least three tasks.",
+      "title": "Create and list accounts",
+      "objective": "Implement POST /accounts and GET /accounts with temporary in-memory storage; validate account creation and return 201 on success.",
+      "deliverable": "Create/list flow demonstrated with at least two sample accounts.",
       "resources": [
         {
           "name": "FastAPI request body",
@@ -441,8 +486,8 @@
           "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         },
         {
-          "name": "FastAPI response status codes",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+          "name": "MDN HTTP status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
         }
       ],
       "duration_minutes": 60,
@@ -450,20 +495,31 @@
       "extension_task": null,
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Implement POST /accounts",
+        "Generate a stable account identifier",
+        "Implement GET /accounts",
+        "Return 201 for account creation",
+        "Reject malformed account data"
+      ]
     },
     {
       "id": "D15",
       "week": 3,
       "day_in_week": 4,
       "date": "2026-12-10",
-      "title": "Retrieve one task and handle missing IDs",
-      "objective": "Implement GET /tasks/{task_id}; return 404 for unknown IDs; distinguish missing resources from invalid input.",
-      "deliverable": "A detail endpoint with correct 200 and 404 behaviours.",
+      "title": "Retrieve accounts and inspect ledger history",
+      "objective": "Implement GET /accounts/{account_id} and GET /accounts/{account_id}/entries; distinguish current balance from immutable posted entries.",
+      "deliverable": "Account detail and history endpoints with success, empty-history and not-found cases.",
       "resources": [
         {
           "name": "FastAPI path parameters",
           "url": "https://fastapi.tiangolo.com/tutorial/path-params/"
+        },
+        {
+          "name": "FastAPI query parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/query-params/"
         },
         {
           "name": "FastAPI error handling",
@@ -475,24 +531,30 @@
       "extension_task": "Test existing ID, missing ID and invalid ID format.",
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Implement account detail response",
+        "Implement account entry-history response",
+        "Test an account with no entries",
+        "Test missing account and pagination boundaries"
+      ]
     },
     {
       "id": "D16",
       "week": 3,
       "day_in_week": 5,
       "date": "2026-12-11",
-      "title": "Update tasks with PATCH",
-      "objective": "Create TaskUpdate model with optional fields; update only provided values; ensure omitted fields remain unchanged.",
-      "deliverable": "PATCH /tasks/{task_id} updates title or completed state and returns the updated task.",
+      "title": "Transfer operation and ledger invariants",
+      "objective": "Implement a small in-memory transfer service to understand debit/credit behaviour before database transactions; prevent overdrafts and create equal debit/credit entries.",
+      "deliverable": "A transfer example where source decreases and destination increases by the same integer amount, with total ledger entries balanced.",
       "resources": [
         {
-          "name": "FastAPI request body",
-          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+          "name": "MDN HTTP methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
         },
         {
-          "name": "FastAPI response models",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+          "name": "Stripe idempotent requests explanation",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
         }
       ],
       "duration_minutes": 60,
@@ -500,24 +562,35 @@
       "extension_task": null,
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Implement a transfer service function",
+        "Validate source and destination accounts differ",
+        "Reject insufficient funds and currency mismatch",
+        "Create matching debit and credit entries",
+        "Verify total debits equal total credits"
+      ]
     },
     {
       "id": "D17",
       "week": 3,
       "day_in_week": 6,
       "date": "2026-12-12",
-      "title": "Delete tasks and status codes",
-      "objective": "Implement DELETE /tasks/{task_id}; choose and document 204 or a response body; handle unknown IDs consistently.",
-      "deliverable": "Full in-memory CRUD API with documented success and failure status codes.",
+      "title": "Immutable transfers and consistent API errors",
+      "objective": "Expose transfer retrieval/history; explain why posted transfers are immutable; handle duplicate requests, missing records and invalid state without PATCH/DELETE on posted ledger entries.",
+      "deliverable": "A transfer history/detail flow and documented error matrix for immutable financial records.",
       "resources": [
-        {
-          "name": "FastAPI response status codes",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
-        },
         {
           "name": "FastAPI error handling",
           "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+        },
+        {
+          "name": "MDN HTTP status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        },
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         }
       ],
       "duration_minutes": 60,
@@ -525,24 +598,30 @@
       "extension_task": null,
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Implement GET /transfers/{transfer_id} or a transfer list",
+        "Do not add update/delete routes for posted transfers",
+        "Return consistent 404, 409 and 422 responses",
+        "Exercise insufficient-funds and currency-mismatch cases"
+      ]
     },
     {
       "id": "D18",
       "week": 4,
       "day_in_week": 1,
       "date": "2026-12-14",
-      "title": "API contract and manual test pass",
-      "objective": "Define response models; check /docs and /openapi.json; exercise every endpoint using curl or Swagger UI; record example requests.",
-      "deliverable": "Endpoint reference table and manual test checklist with success/error cases.",
+      "title": "Ledger API contract and manual test pass",
+      "objective": "Review response models and the ledger contract; test account creation, lookup, history and a transfer using curl or Swagger UI.",
+      "deliverable": "A complete api-contract.md and manual test checklist covering successful transfer and key failure cases.",
       "resources": [
         {
           "name": "FastAPI response models",
           "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
         },
         {
-          "name": "FastAPI response status codes",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+          "name": "MDN HTTP status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
         },
         {
           "name": "FastAPI First Steps",
@@ -554,332 +633,31 @@
       "extension_task": "Explain the request/response lifecycle for POST /tasks from memory.",
       "status": "not_started",
       "completed_at": null,
-      "notes": ""
+      "notes": "",
+      "tasks": [
+        "Verify each documented endpoint exists or is explicitly scheduled",
+        "Exercise account create/list/detail/history",
+        "Exercise successful transfer and insufficient funds",
+        "Test missing account, invalid amount and idempotency conflict",
+        "Record expected status and response for each case"
+      ]
     },
     {
       "id": "D19",
       "week": 4,
       "day_in_week": 2,
       "date": "2026-12-15",
-      "title": "Relational data refresher",
-      "objective": "Refresh tables, rows, columns, primary keys, uniqueness and basic SELECT/INSERT/UPDATE/DELETE; inspect SQLite with Python.",
-      "deliverable": "A small SQLite database with a tasks table and a few rows.",
+      "title": "Relational data and PostgreSQL foundations",
+      "objective": "Learn tables, rows, primary keys, foreign keys, unique constraints, indexes and basic SQL using PostgreSQL rather than SQLite.",
+      "deliverable": "A PostgreSQL database with accounts, transfers and ledger_entries tables sketched and basic SQL queries run.",
       "resources": [
         {
-          "name": "Python sqlite3",
-          "url": "https://docs.python.org/3/library/sqlite3.html"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D20",
-      "week": 4,
-      "day_in_week": 3,
-      "date": "2026-12-16",
-      "title": "Introduce SQLModel and database models",
-      "objective": "Follow FastAPI SQL database tutorial; install SQLModel; define Task table model; create SQLite engine and database file.",
-      "deliverable": "A Task table is created from the model in the lab.",
-      "resources": [
-        {
-          "name": "FastAPI SQL databases / SQLModel",
-          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
         },
         {
-          "name": "Python sqlite3",
-          "url": "https://docs.python.org/3/library/sqlite3.html"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D21",
-      "week": 4,
-      "day_in_week": 4,
-      "date": "2026-12-17",
-      "title": "Database sessions and dependencies",
-      "objective": "Understand database session, opening/closing a session and FastAPI dependency injection; add a get_session dependency.",
-      "deliverable": "A request-scoped database session dependency with clear cleanup.",
-      "resources": [
-        {
-          "name": "FastAPI SQL databases / SQLModel",
-          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
-        },
-        {
-          "name": "FastAPI dependencies",
-          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 15,
-      "extension_task": "Trace one request and explain when its database session is created and closed.",
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D22",
-      "week": 4,
-      "day_in_week": 5,
-      "date": "2026-12-18",
-      "title": "Persist task creation and listing",
-      "objective": "Replace in-memory list with SQLModel inserts and selects; restart app and confirm data remains.",
-      "deliverable": "POST and GET /tasks use SQLite persistence.",
-      "resources": [
-        {
-          "name": "FastAPI SQL databases / SQLModel",
-          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
-        },
-        {
-          "name": "Python sqlite3",
-          "url": "https://docs.python.org/3/library/sqlite3.html"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D23",
-      "week": 4,
-      "day_in_week": 6,
-      "date": "2026-12-19",
-      "title": "Persist retrieve, update and delete",
-      "objective": "Convert task detail, PATCH and DELETE endpoints to database operations; handle nonexistent IDs and commit changes.",
-      "deliverable": "All CRUD operations work against SQLite across app restarts.",
-      "resources": [
-        {
-          "name": "FastAPI SQL databases / SQLModel",
-          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
-        },
-        {
-          "name": "FastAPI response status codes",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D24",
-      "week": 5,
-      "day_in_week": 1,
-      "date": "2026-12-21",
-      "title": "Database integrity and persistence checks",
-      "objective": "Test unique IDs and required fields; inspect SQLite file; test fresh DB creation and invalid input; document limitations.",
-      "deliverable": "Repeatable persistence check and database notes; no migration framework required yet.",
-      "resources": [
-        {
-          "name": "Python sqlite3",
-          "url": "https://docs.python.org/3/library/sqlite3.html"
-        },
-        {
-          "name": "FastAPI SQL databases / SQLModel",
-          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 15,
-      "extension_task": "Add one test for a task that remains available after recreating the app process.",
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D25",
-      "week": 5,
-      "day_in_week": 2,
-      "date": "2026-12-22",
-      "title": "Refactor into a small app structure",
-      "objective": "Separate main app, task routes, schemas, database and models; use APIRouter; keep layout small and readable.",
-      "deliverable": "A modular FastAPI app with the same behaviour as before refactor.",
-      "resources": [
-        {
-          "name": "FastAPI First Steps",
-          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
-        },
-        {
-          "name": "FastAPI dependencies",
-          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D26",
-      "week": 5,
-      "day_in_week": 3,
-      "date": "2026-12-23",
-      "title": "Pydantic schemas and response models",
-      "objective": "Separate create, update and response schemas; prevent internal DB fields leaking accidentally; validate input lengths and required values.",
-      "deliverable": "Explicit input/output schemas and predictable response JSON.",
-      "resources": [
-        {
-          "name": "FastAPI request body",
-          "url": "https://fastapi.tiangolo.com/tutorial/body/"
-        },
-        {
-          "name": "FastAPI response models",
-          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D27",
-      "week": 5,
-      "day_in_week": 4,
-      "date": "2026-12-24",
-      "title": "pytest fundamentals",
-      "objective": "Install pytest; write tests for pure functions and schema validation; understand Arrange/Act/Assert and failure output.",
-      "deliverable": "At least five passing unit tests.",
-      "resources": [
-        {
-          "name": "pytest Getting Started",
-          "url": "https://pytest.org/en/stable/getting-started.html"
-        },
-        {
-          "name": "Python Tutorial",
-          "url": "https://docs.python.org/3/tutorial/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 15,
-      "extension_task": "Intentionally break one assertion and diagnose pytest output.",
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D28",
-      "week": 5,
-      "day_in_week": 5,
-      "date": "2026-12-25",
-      "title": "FastAPI TestClient and endpoint tests",
-      "objective": "Use TestClient; create tests for create/list/detail/update/delete; isolate test database from development DB.",
-      "deliverable": "A repeatable API test suite that runs with one command.",
-      "resources": [
-        {
-          "name": "FastAPI testing",
-          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
-        },
-        {
-          "name": "pytest Getting Started",
-          "url": "https://pytest.org/en/stable/getting-started.html"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D29",
-      "week": 5,
-      "day_in_week": 6,
-      "date": "2026-12-26",
-      "title": "Error handling, dependencies and configuration",
-      "objective": "Use HTTPException for expected API errors; centralize reusable dependencies; read config from environment variables; never hardcode secrets.",
-      "deliverable": "Consistent 404/422 behaviours and documented local configuration example.",
-      "resources": [
-        {
-          "name": "FastAPI error handling",
-          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
-        },
-        {
-          "name": "FastAPI dependencies",
-          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
-        },
-        {
-          "name": "FastAPI settings",
-          "url": "https://fastapi.tiangolo.com/advanced/settings/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 15,
-      "extension_task": "Add a test confirming an unknown task returns 404 JSON.",
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D30",
-      "week": 6,
-      "day_in_week": 1,
-      "date": "2026-12-28",
-      "title": "Logging, health checks and API checkpoint",
-      "objective": "Add simple logs; implement /healthz and /readyz with distinct meanings; run all tests and update README.",
-      "deliverable": "Feature-complete beginner Task API with tests, documented endpoints and setup instructions.",
-      "resources": [
-        {
-          "name": "FastAPI First Steps",
-          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
-        },
-        {
-          "name": "FastAPI testing",
-          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
-        },
-        {
-          "name": "FastAPI settings",
-          "url": "https://fastapi.tiangolo.com/advanced/settings/"
-        }
-      ],
-      "duration_minutes": 60,
-      "extension_minutes": 0,
-      "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": ""
-    },
-    {
-      "id": "D31",
-      "week": 6,
-      "day_in_week": 2,
-      "date": "2026-12-29",
-      "title": "Containers from first principles",
-      "objective": "Use a browser Docker scenario, then run and inspect hello-world, Alpine and Nginx with Colima. Compare images, containers, processes and ports.",
-      "deliverable": "Docker command notebook, verified Colima context and explanation of image vs container.",
-      "resources": [
-        {
-          "name": "Killercoda Docker scenarios",
-          "url": "https://killercoda.com/docker"
-        },
-        {
-          "name": "Killercoda playlabs",
-          "url": "https://killercoda.com/playlabs"
-        },
-        {
-          "name": "Play with Docker Classroom",
-          "url": "https://training.play-with-docker.com/"
+          "name": "PostgreSQL constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html"
         }
       ],
       "duration_minutes": 60,
@@ -889,9 +667,423 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Run a short browser Docker basics lab",
-        "Run, inspect, stop and remove a container locally with Colima",
-        "Save commands and a short comparison of remote vs local environment"
+        "Understand relational tables, rows and data types",
+        "Practise SELECT, INSERT, UPDATE and DELETE on disposable sample data",
+        "Inspect primary keys, foreign keys and unique constraints",
+        "Explain why PostgreSQL is the project database",
+        "Write queries for account balances and transfer history"
+      ]
+    },
+    {
+      "id": "D20",
+      "week": 4,
+      "day_in_week": 3,
+      "date": "2026-12-16",
+      "title": "Run PostgreSQL locally and connect to it",
+      "objective": "Start one disposable PostgreSQL container through Colima; connect with psql and inspect the database. This is a focused database prerequisite, not the full Docker lesson.",
+      "deliverable": "A reachable local PostgreSQL database with a database/user created for the learning API; no real credentials committed.",
+      "resources": [
+        {
+          "name": "Official PostgreSQL Docker image",
+          "url": "https://hub.docker.com/_/postgres"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Start a PostgreSQL container with a named volume and fake local-only password",
+        "Connect using psql",
+        "Create a database and least-privilege application user",
+        "Run simple SELECT and INSERT queries",
+        "Restart the container and verify data persists"
+      ]
+    },
+    {
+      "id": "D21",
+      "week": 4,
+      "day_in_week": 4,
+      "date": "2026-12-17",
+      "title": "Ledger database models and constraints",
+      "objective": "Model Account, Transfer, LedgerEntry and IdempotencyRecord with SQLModel/SQLAlchemy; define keys, relationships and database-level constraints.",
+      "deliverable": "Database models that create the expected PostgreSQL schema and enforce key uniqueness/relationships.",
+      "resources": [
+        {
+          "name": "SQLModel documentation",
+          "url": "https://sqlmodel.tiangolo.com/"
+        },
+        {
+          "name": "PostgreSQL constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Trace one request and explain when its database session is created and closed.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Define Account and Transfer models",
+        "Define immutable LedgerEntry rows with debit/credit direction",
+        "Define idempotency key uniqueness and request fingerprint storage",
+        "Add amount-positive and currency constraints where practical",
+        "Inspect generated database schema"
+      ]
+    },
+    {
+      "id": "D22",
+      "week": 4,
+      "day_in_week": 5,
+      "date": "2026-12-18",
+      "title": "Database sessions, transactions and FastAPI dependencies",
+      "objective": "Understand SQLAlchemy sessions, transaction boundaries, connection configuration and FastAPI dependency injection; use one request-scoped session and close it reliably.",
+      "deliverable": "A database session dependency that reads DATABASE_URL from environment and cleans up correctly.",
+      "resources": [
+        {
+          "name": "SQLModel documentation",
+          "url": "https://sqlmodel.tiangolo.com/"
+        },
+        {
+          "name": "FastAPI dependencies",
+          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
+        },
+        {
+          "name": "PostgreSQL transactions tutorial",
+          "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create a PostgreSQL engine from DATABASE_URL",
+        "Create session factory and get_session dependency",
+        "Explain when a session begins, commits, rolls back and closes",
+        "Keep secrets out of source files",
+        "Test database connectivity from the app"
+      ]
+    },
+    {
+      "id": "D23",
+      "week": 4,
+      "day_in_week": 6,
+      "date": "2026-12-19",
+      "title": "Persist accounts and account history",
+      "objective": "Replace in-memory account data with PostgreSQL operations; persist account creation, retrieval, listing and ledger-entry history.",
+      "deliverable": "Account endpoints backed by PostgreSQL and data that survives application restarts.",
+      "resources": [
+        {
+          "name": "SQLModel documentation",
+          "url": "https://sqlmodel.tiangolo.com/"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
+        },
+        {
+          "name": "PostgreSQL constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Persist account creation",
+        "Persist account lookup and list",
+        "Query ledger entries by account with stable pagination",
+        "Restart the API and verify persistence",
+        "Test foreign-key and uniqueness failures"
+      ]
+    },
+    {
+      "id": "D24",
+      "week": 5,
+      "day_in_week": 1,
+      "date": "2026-12-21",
+      "title": "Atomic transfers and double-entry ledger posting",
+      "objective": "Implement a transfer in one database transaction: validate accounts and funds, record the transfer, update both balances and insert balanced debit/credit ledger entries; roll back all changes on failure.",
+      "deliverable": "A successful transfer has equal debit and credit entries; a failed transfer leaves balances and ledger unchanged.",
+      "resources": [
+        {
+          "name": "PostgreSQL transactions tutorial",
+          "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+        },
+        {
+          "name": "PostgreSQL transaction isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        },
+        {
+          "name": "PostgreSQL explicit locking",
+          "url": "https://www.postgresql.org/docs/current/explicit-locking.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add one test for a task that remains available after recreating the app process.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Start one PostgreSQL transaction for a transfer",
+        "Lock/read account rows in a consistent order",
+        "Update both account balances and insert both ledger entries",
+        "Commit only after every operation succeeds",
+        "Force a failure between debit and credit and prove rollback"
+      ]
+    },
+    {
+      "id": "D25",
+      "week": 5,
+      "day_in_week": 2,
+      "date": "2026-12-22",
+      "title": "Idempotency keys, unique constraints and concurrent retries",
+      "objective": "Persist idempotency keys with a unique constraint and request fingerprint; return the original result for an identical retry and reject a different payload using the same key.",
+      "deliverable": "Integration evidence showing one transfer for repeated identical requests and a conflict for a changed payload with the same key.",
+      "resources": [
+        {
+          "name": "Stripe idempotent requests explanation",
+          "url": "https://docs.stripe.com/api/idempotent_requests"
+        },
+        {
+          "name": "PostgreSQL constraints",
+          "url": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+        },
+        {
+          "name": "PostgreSQL transaction isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Persist Idempotency-Key and request fingerprint",
+        "Add a unique constraint on the key within its defined scope",
+        "Replay an identical request and return the original result",
+        "Reject a changed payload using the same key",
+        "Test simultaneous duplicate submissions at a basic level"
+      ]
+    },
+    {
+      "id": "D26",
+      "week": 5,
+      "day_in_week": 3,
+      "date": "2026-12-23",
+      "title": "Alembic migrations and safe schema evolution",
+      "objective": "Introduce Alembic to manage PostgreSQL schema changes; generate, inspect, apply and roll back a small migration safely.",
+      "deliverable": "A versioned migration that creates the ledger schema and can be upgraded from an empty database.",
+      "resources": [
+        {
+          "name": "Alembic tutorial",
+          "url": "https://alembic.sqlalchemy.org/en/latest/tutorial.html"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Initialise Alembic against project metadata",
+        "Generate and inspect an initial migration",
+        "Run upgrade to head and inspect the schema",
+        "Practise downgrade in a disposable database",
+        "Explain why schema changes need reviewed migrations"
+      ]
+    },
+    {
+      "id": "D27",
+      "week": 5,
+      "day_in_week": 4,
+      "date": "2026-12-24",
+      "title": "pytest and ledger-domain unit tests",
+      "objective": "Write unit tests for pure ledger rules and validation without HTTP or a database; understand Arrange/Act/Assert and readable failure output.",
+      "deliverable": "At least five passing unit tests covering amount validation, currency rules and debit/credit balancing.",
+      "resources": [
+        {
+          "name": "pytest getting started",
+          "url": "https://docs.pytest.org/en/stable/getting-started.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Intentionally break one assertion and diagnose pytest output.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Install pytest",
+        "Test positive integer minor-unit amounts",
+        "Test source/destination account validation",
+        "Test debit/credit balancing logic",
+        "Intentionally break one assertion and read the failure"
+      ]
+    },
+    {
+      "id": "D28",
+      "week": 5,
+      "day_in_week": 5,
+      "date": "2026-12-25",
+      "title": "FastAPI TestClient and PostgreSQL integration tests",
+      "objective": "Test account and transfer endpoints using FastAPI TestClient and an isolated PostgreSQL test database; verify success and expected errors.",
+      "deliverable": "A repeatable integration test suite that does not touch the development database.",
+      "resources": [
+        {
+          "name": "FastAPI testing",
+          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
+        },
+        {
+          "name": "pytest getting started",
+          "url": "https://docs.pytest.org/en/stable/getting-started.html"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Configure a separate test database",
+        "Use TestClient for account endpoints",
+        "Test a successful transfer and response",
+        "Test 404, 409 and 422 responses",
+        "Reset test data between cases"
+      ]
+    },
+    {
+      "id": "D29",
+      "week": 5,
+      "day_in_week": 6,
+      "date": "2026-12-26",
+      "title": "Transaction rollback, isolation and race-condition tests",
+      "objective": "Explore PostgreSQL transaction isolation and row-level locking; test two transfers competing for one balance and prove the account cannot be overdrawn.",
+      "deliverable": "Tests or a controlled demonstration showing the chosen locking/isolation behaviour and preserved balance invariants.",
+      "resources": [
+        {
+          "name": "PostgreSQL transaction isolation",
+          "url": "https://www.postgresql.org/docs/current/transaction-iso.html"
+        },
+        {
+          "name": "PostgreSQL explicit locking",
+          "url": "https://www.postgresql.org/docs/current/explicit-locking.html"
+        },
+        {
+          "name": "PostgreSQL transactions tutorial",
+          "url": "https://www.postgresql.org/docs/current/tutorial-transactions.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add a test confirming an unknown task returns 404 JSON.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Read PostgreSQL isolation overview",
+        "Explain READ COMMITTED at a practical level",
+        "Use row locks or conditional updates to protect balances",
+        "Run competing transfer attempts against a constrained balance",
+        "Verify no negative balance or unbalanced ledger entries"
+      ]
+    },
+    {
+      "id": "D30",
+      "week": 6,
+      "day_in_week": 1,
+      "date": "2026-12-28",
+      "title": "Structured logs, health checks and API checkpoint",
+      "objective": "Add useful structured application logs, /healthz and a database-aware /readyz; run tests and review the API before containerising.",
+      "deliverable": "A tested Ledger API with readiness that checks PostgreSQL connectivity, concise logs and a clean local runbook.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        },
+        {
+          "name": "FastAPI dependencies",
+          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
+        },
+        {
+          "name": "pytest getting started",
+          "url": "https://docs.pytest.org/en/stable/getting-started.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Log request outcome and transfer result without sensitive values",
+        "Implement /healthz and database-aware /readyz",
+        "Run unit and integration tests",
+        "Document local start/stop and database commands",
+        "Review ledger invariants and outstanding gaps"
+      ]
+    },
+    {
+      "id": "D31",
+      "week": 6,
+      "day_in_week": 2,
+      "date": "2026-12-29",
+      "title": "Containers from first principles",
+      "objective": "Use a short browser Docker scenario, then inspect hello-world, Alpine and a small Nginx container with Colima; distinguish image, container, process, port and lifecycle.",
+      "deliverable": "A command note showing image pull, run, inspect, logs, stop and remove.",
+      "resources": [
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Docker getting started",
+          "url": "https://docs.docker.com/get-started/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Practise one browser Docker scenario",
+        "Pull and run a small image",
+        "Inspect container logs and process",
+        "Stop, start and remove the container",
+        "Explain image vs container"
       ]
     },
     {
@@ -899,21 +1091,17 @@
       "week": 6,
       "day_in_week": 3,
       "date": "2026-12-30",
-      "title": "Build the FastAPI Docker image",
-      "objective": "Use a browser build tutorial, then create and build a Dockerfile for the FastAPI app locally using an official Python image, dependency install and app startup command.",
-      "deliverable": "Locally built reliability-lab-api image and documented build command.",
+      "title": "Build the Ledger API Docker image",
+      "objective": "Create a Dockerfile for the FastAPI service using a supported Python base image, install dependencies and start the app; inspect build layers and image size.",
+      "deliverable": "A reproducible local API image that starts and exposes the health endpoint.",
       "resources": [
-        {
-          "name": "Play with Docker Classroom",
-          "url": "https://training.play-with-docker.com/"
-        },
-        {
-          "name": "FastAPI Docker guide",
-          "url": "https://fastapi.tiangolo.com/deployment/docker/"
-        },
         {
           "name": "Docker build best practices",
           "url": "https://docs.docker.com/build/building/best-practices/"
+        },
+        {
+          "name": "Docker getting started",
+          "url": "https://docs.docker.com/get-started/"
         }
       ],
       "duration_minutes": 60,
@@ -923,9 +1111,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a short browser Docker build exercise",
-        "Build the Task API image locally",
-        "Explain Dockerfile base image, copy, install and startup instructions"
+        "Create a small Dockerfile",
+        "Build the image with a clear tag",
+        "Run with environment configuration",
+        "Inspect logs and container metadata",
+        "Add .dockerignore and use non-root where practical"
       ]
     },
     {
@@ -934,20 +1124,20 @@
       "day_in_week": 4,
       "date": "2026-12-31",
       "title": "Ports, processes and container debugging",
-      "objective": "Run the API with a published port; inspect logs, processes, environment and metadata. Deliberately use an incorrect port mapping and diagnose it.",
-      "deliverable": "API reachable from localhost and a port-mapping troubleshooting note.",
+      "objective": "Run the API container with a published port; inspect processes, logs, environment and metadata; deliberately misconfigure a port mapping and diagnose it.",
+      "deliverable": "API reachable on localhost plus a port-mapping troubleshooting note.",
       "resources": [
+        {
+          "name": "Docker getting started",
+          "url": "https://docs.docker.com/get-started/"
+        },
+        {
+          "name": "ss manual",
+          "url": "https://man7.org/linux/man-pages/man8/ss.8.html"
+        },
         {
           "name": "Killercoda Docker scenarios",
           "url": "https://killercoda.com/docker"
-        },
-        {
-          "name": "Docker published ports",
-          "url": "https://docs.docker.com/engine/network/#published-ports"
-        },
-        {
-          "name": "FastAPI Docker guide",
-          "url": "https://fastapi.tiangolo.com/deployment/docker/"
         }
       ],
       "duration_minutes": 60,
@@ -957,9 +1147,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Practise container access in a browser scenario",
-        "Run the API with a local port mapping",
-        "Break and fix the mapping using ps, logs, inspect and curl"
+        "Publish the API port to localhost",
+        "Inspect processes and listening ports",
+        "Introduce an incorrect host/container port mapping",
+        "Use curl and container logs to diagnose",
+        "Explain why PostgreSQL is not exposed publicly in later labs"
       ]
     },
     {
@@ -967,17 +1159,17 @@
       "week": 6,
       "day_in_week": 5,
       "date": "2027-01-01",
-      "title": "Filesystems, bind mounts and named volumes",
-      "objective": "Compare image files, writable layer, bind mounts and named volumes. Mount SQLite under /data and prove data survives container replacement.",
-      "deliverable": "Repeatable persistence test and filesystem/volume diagram.",
+      "title": "PostgreSQL filesystems, bind mounts and named volumes",
+      "objective": "Understand image layer, writable layer, bind mount and named volume; persist PostgreSQL data and prove it survives container replacement.",
+      "deliverable": "A PostgreSQL named volume with evidence that data survives removal and recreation of the container.",
       "resources": [
-        {
-          "name": "Killercoda Docker scenarios",
-          "url": "https://killercoda.com/docker"
-        },
         {
           "name": "Docker volumes",
           "url": "https://docs.docker.com/engine/storage/volumes/"
+        },
+        {
+          "name": "Official PostgreSQL Docker image",
+          "url": "https://hub.docker.com/_/postgres"
         }
       ],
       "duration_minutes": 60,
@@ -987,9 +1179,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete browser volume exercise",
-        "Persist SQLite locally with a named volume",
-        "Replace the container and verify that data remains"
+        "Compare writable layer, bind mount and named volume",
+        "Mount a named volume at PostgreSQL data directory",
+        "Create sample accounts and ledger entries",
+        "Replace container without deleting volume",
+        "Verify data remains"
       ]
     },
     {
@@ -997,21 +1191,21 @@
       "week": 6,
       "day_in_week": 6,
       "date": "2027-01-02",
-      "title": "Docker Compose and service discovery",
-      "objective": "Create compose.yaml with API build, ports, environment, named volume and health check. Add a second service and prove Compose service-name DNS works.",
-      "deliverable": "Repeatable Compose workflow, named network and successful service-to-service request.",
+      "title": "Docker Compose for API and PostgreSQL",
+      "objective": "Create compose.yaml with API and PostgreSQL services, environment, health checks, persistent database volume and an internal network; confirm service-name DNS.",
+      "deliverable": "A repeatable Compose stack where the API connects to PostgreSQL by service name and data persists.",
       "resources": [
         {
-          "name": "Play with Docker Classroom",
-          "url": "https://training.play-with-docker.com/"
-        },
-        {
-          "name": "Docker Compose Quickstart",
+          "name": "Docker Compose getting started",
           "url": "https://docs.docker.com/compose/gettingstarted/"
         },
         {
           "name": "Docker networking",
           "url": "https://docs.docker.com/engine/network/"
+        },
+        {
+          "name": "Official PostgreSQL Docker image",
+          "url": "https://hub.docker.com/_/postgres"
         }
       ],
       "duration_minutes": 60,
@@ -1021,9 +1215,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser multi-service Compose exercise",
-        "Run the API and a second service locally",
-        "Verify service-name DNS and inspect the Compose network"
+        "Define API and PostgreSQL services",
+        "Use a health check and readiness behaviour",
+        "Keep DATABASE_URL internal to Compose network",
+        "Verify API-to-database connection by service name",
+        "Bring stack down without deleting database volume"
       ]
     },
     {
@@ -1031,21 +1227,21 @@
       "week": 7,
       "day_in_week": 1,
       "date": "2027-01-04",
-      "title": "Docker networking and image hygiene",
-      "objective": "Create/inspect a user-defined bridge; connect/disconnect containers; test name-based connectivity vs host-published ports. Add .dockerignore and non-root user where practical; diagnose four planted failures.",
-      "deliverable": "Docker troubleshooting page with at least four failure/evidence/fix examples and a network diagram.",
+      "title": "Docker networking, DNS and image hygiene",
+      "objective": "Inspect a user-defined bridge; compare service-name DNS, container ports and host-published ports; troubleshoot network failures and harden the image.",
+      "deliverable": "A Docker troubleshooting note with at least four failure/evidence/fix examples and a network diagram.",
       "resources": [
         {
-          "name": "Killercoda Docker scenarios",
-          "url": "https://killercoda.com/docker"
-        },
-        {
-          "name": "Docker bridge networks",
-          "url": "https://docs.docker.com/engine/network/drivers/bridge/"
+          "name": "Docker networking",
+          "url": "https://docs.docker.com/engine/network/"
         },
         {
           "name": "Docker build best practices",
           "url": "https://docs.docker.com/build/building/best-practices/"
+        },
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
         }
       ],
       "duration_minutes": 60,
@@ -1055,10 +1251,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Practise a Docker networking browser lab",
-        "Create and inspect a local user-defined bridge network",
-        "Test container DNS and port publishing",
-        "Record four failure, evidence and fix examples"
+        "Create and inspect a user-defined bridge network",
+        "Test service-name DNS and container-to-container connectivity",
+        "Compare localhost, container IP and host-published port",
+        "Diagnose four planted networking/configuration failures",
+        "Review .dockerignore, non-root user and image size"
       ]
     },
     {
@@ -1067,24 +1264,16 @@
       "day_in_week": 2,
       "date": "2027-01-05",
       "title": "Kubernetes architecture and local k3d",
-      "objective": "Inspect a ready-made browser Kubernetes cluster and run kubectl. Verify Colima, install/check kubectl and k3d, create one local server cluster and inspect nodes.",
-      "deliverable": "Healthy single-server local cluster and architecture sketch comparing browser and local cluster.",
+      "objective": "Inspect a browser Kubernetes cluster and kubectl; verify Colima, install/check kubectl and k3d, create one local server cluster and inspect nodes.",
+      "deliverable": "A healthy one-node k3d cluster running through Colima with context and node evidence.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
-        },
         {
           "name": "Kubernetes Basics",
           "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
         },
         {
-          "name": "k3d docs",
-          "url": "https://k3d.io/stable/"
-        },
-        {
-          "name": "Colima runtimes",
-          "url": "https://colima.run/docs/runtimes/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "duration_minutes": 60,
@@ -1094,9 +1283,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Inspect nodes and cluster context in Killercoda playground",
-        "Create the local single-server k3d cluster through Colima",
-        "Save cluster-info and node evidence"
+        "Practise a browser Kubernetes scenario",
+        "Check Colima resources before creating cluster",
+        "Create one k3d server node",
+        "Inspect contexts, nodes and namespaces",
+        "Verify active context before applying manifests"
       ]
     },
     {
@@ -1104,21 +1295,17 @@
       "week": 7,
       "day_in_week": 3,
       "date": "2027-01-06",
-      "title": "Containers, Pods and manifests",
-      "objective": "Complete a browser Pod/container exercise. Write a Pod manifest locally; apply, inspect, describe and delete it. Explain desired state, labels, image and container port.",
-      "deliverable": "Pod manifest and explanation of Pod vs container.",
+      "title": "Pods and Kubernetes manifests",
+      "objective": "Write a minimal Pod manifest; apply, inspect, describe and delete it; explain desired state, labels, image and container ports.",
+      "deliverable": "A working sample Pod manifest and explanation of its fields.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes Pods",
           "url": "https://kubernetes.io/docs/concepts/workloads/pods/"
         },
         {
-          "name": "kubectl quick reference",
-          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "duration_minutes": 60,
@@ -1128,9 +1315,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete one browser Pod scenario",
-        "Apply and inspect a local Pod manifest",
-        "Delete it and explain each important manifest field"
+        "Complete a browser Pod exercise",
+        "Write a Pod manifest",
+        "Apply and inspect Pod status/events",
+        "Use logs and describe output",
+        "Delete Pod and explain important fields"
       ]
     },
     {
@@ -1138,17 +1327,21 @@
       "week": 7,
       "day_in_week": 4,
       "date": "2027-01-07",
-      "title": "Deployments and ReplicaSets",
-      "objective": "Complete a browser Deployment exercise. Deploy the API locally, inspect its ReplicaSet and Pods, delete a Pod and observe reconciliation. Keep the SQLite API at one replica.",
-      "deliverable": "API Deployment and evidence that the controller recreates a deleted Pod.",
+      "title": "Deploy the API and PostgreSQL in Kubernetes",
+      "objective": "Create a Deployment for the stateless API and a single-replica PostgreSQL StatefulSet with persistent storage; understand why database state needs special handling.",
+      "deliverable": "API Deployment and single-instance PostgreSQL workload manifests with documented storage and backup limitations.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes Deployments",
           "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        },
+        {
+          "name": "Kubernetes persistent volumes",
+          "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/"
+        },
+        {
+          "name": "Kubernetes Services",
+          "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
         }
       ],
       "duration_minutes": 60,
@@ -1158,9 +1351,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser Deployment Basics scenario",
-        "Deploy the API locally",
-        "Delete one Pod and record controller reconciliation"
+        "Deploy the API with a Deployment",
+        "Deploy one PostgreSQL instance with a PVC",
+        "Use fake local-only credentials in a Secret",
+        "Verify API reaches PostgreSQL using cluster DNS",
+        "Explain why this is a learning topology, not HA production"
       ]
     },
     {
@@ -1168,21 +1363,17 @@
       "week": 7,
       "day_in_week": 5,
       "date": "2027-01-08",
-      "title": "Services, selectors and cluster access",
-      "objective": "Practise a Service scenario in the browser. Create a local ClusterIP Service, verify selectors/endpoints and use port-forward to call the API. Compare cluster DNS with port-forwarding.",
-      "deliverable": "Service manifest and successful request to the API in the cluster.",
+      "title": "Kubernetes Services, selectors and database connectivity",
+      "objective": "Create ClusterIP Services for API and PostgreSQL; verify selectors/endpoints and use port-forward to call API; compare cluster DNS with port forwarding.",
+      "deliverable": "Working API Service and internal PostgreSQL Service with endpoint evidence and connection diagram.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes Services",
           "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
         },
         {
-          "name": "kubectl quick reference",
-          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "duration_minutes": 60,
@@ -1192,9 +1383,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser Service exercise",
-        "Create a local ClusterIP Service",
-        "Check selectors and endpoints and call the service via port-forward"
+        "Create an API ClusterIP Service",
+        "Create internal-only PostgreSQL Service",
+        "Verify selectors and endpoints",
+        "Use port-forward to call API locally",
+        "Verify API connects to PostgreSQL by service name"
       ]
     },
     {
@@ -1203,16 +1396,16 @@
       "day_in_week": 6,
       "date": "2027-01-09",
       "title": "Scaling, rolling updates and rollback",
-      "objective": "Scale stateless Nginx in browser and locally; perform rolling update and rollback after a bad image. Keep the SQLite API single-replica and explain why.",
-      "deliverable": "Scale, rollout and rollback evidence plus note on SQLite replica constraint.",
+      "objective": "Scale only stateless API replicas; perform an image update and rollback; keep PostgreSQL single-instance and explain the different scaling model.",
+      "deliverable": "Scale, rollout and rollback evidence plus note on stateless API vs stateful database responsibilities.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes Deployments",
           "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        },
+        {
+          "name": "Kubernetes Basics",
+          "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
         }
       ],
       "duration_minutes": 60,
@@ -1222,10 +1415,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Repeat a scaling/rollout scenario in Killercoda",
-        "Scale stateless Nginx locally",
-        "Perform a rolling update and rollback",
-        "Verify the SQLite API remains single-replica"
+        "Scale API replicas to two if resources permit",
+        "Verify both API replicas connect to one PostgreSQL Service",
+        "Perform rolling update and inspect rollout status",
+        "Deploy a bad image and roll back",
+        "Do not scale PostgreSQL replicas"
       ]
     },
     {
@@ -1233,14 +1427,10 @@
       "week": 8,
       "day_in_week": 1,
       "date": "2027-01-11",
-      "title": "ConfigMaps and Secrets",
-      "objective": "Practise configuration injection in browser. Move non-sensitive settings to a local ConfigMap and inject a disposable fake Secret; never use real credentials.",
-      "deliverable": "ConfigMap and Secret manifests, plus security notes.",
+      "title": "ConfigMaps, Secrets and configuration safety",
+      "objective": "Move non-sensitive settings to ConfigMaps and inject fake database credentials using a Kubernetes Secret; understand base64 is not encryption.",
+      "deliverable": "A manifest example separating public configuration and disposable fake credentials.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes ConfigMaps",
           "url": "https://kubernetes.io/docs/concepts/configuration/configmap/"
@@ -1257,9 +1447,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser ConfigMap/Secret exercise",
-        "Inject ConfigMap and fake Secret values locally",
-        "Verify values without committing or printing sensitive data"
+        "Create a ConfigMap for non-sensitive settings",
+        "Create a Secret with fake local-only credentials",
+        "Inject values into API and database",
+        "Verify secrets are not printed in logs or committed",
+        "Explain Secret storage limitations"
       ]
     },
     {
@@ -1268,16 +1460,16 @@
       "day_in_week": 2,
       "date": "2027-01-12",
       "title": "Liveness, readiness and startup probes",
-      "objective": "Complete a browser probe exercise, then connect /healthz and /readyz to local Deployment probes. Cause a controlled failure and observe readiness removal vs restart behaviour.",
-      "deliverable": "Deployment with appropriate probes and evidence distinguishing liveness, readiness and startup checks.",
+      "objective": "Connect /healthz and /readyz to Kubernetes probes; cause controlled database unavailability and observe readiness removal vs process restart behaviour.",
+      "deliverable": "Probe configuration distinguishing liveness from readiness.",
       "resources": [
         {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
+          "name": "Kubernetes probes",
+          "url": "https://kubernetes.io/docs/concepts/configuration/liveness-readiness-startup-probes/"
         },
         {
-          "name": "Kubernetes probes",
-          "url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "duration_minutes": 60,
@@ -1287,9 +1479,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Practise a browser probe scenario",
-        "Configure local startup/liveness/readiness probes",
-        "Cause and diagnose a controlled probe failure"
+        "Configure liveness probe",
+        "Configure readiness probe reflecting database dependency",
+        "Add startup probe if needed",
+        "Temporarily make PostgreSQL unavailable",
+        "Observe readiness changes and restore service"
       ]
     },
     {
@@ -1298,16 +1492,16 @@
       "day_in_week": 3,
       "date": "2027-01-13",
       "title": "CPU and memory requests/limits",
-      "objective": "Set modest requests and limits; inspect Pod description and usage; understand scheduling, throttling and OOMKilled. Use browser lab for repetition and keep local tests small.",
-      "deliverable": "Resource declarations and note explaining requests vs limits and OOM evidence.",
+      "objective": "Set modest requests and limits for API and PostgreSQL; inspect scheduling, usage, throttling and OOMKilled evidence without exhausting the Mac.",
+      "deliverable": "Resource settings table with observed Pod behaviour and safe local values.",
       "resources": [
         {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+          "name": "Kubernetes Basics",
+          "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
         },
         {
-          "name": "Kubernetes resource management",
-          "url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "duration_minutes": 60,
@@ -1317,9 +1511,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser resource limits exercise",
-        "Set conservative local requests and limits",
-        "Inspect events and explain OOMKilled evidence"
+        "Set API requests and limits",
+        "Set conservative PostgreSQL requests and limits",
+        "Inspect Pod description and usage",
+        "Explain OOMKilled and CPU throttling",
+        "Keep settings within Mac resource budget"
       ]
     },
     {
@@ -1327,21 +1523,17 @@
       "week": 8,
       "day_in_week": 4,
       "date": "2027-01-14",
-      "title": "Persistent storage in Kubernetes",
-      "objective": "Use browser cluster to inspect a PVC/PV. Create a local PVC if provisioner is practical; mount for single-replica SQLite API and verify persistence across Pod replacement.",
-      "deliverable": "PVC manifest and persistence evidence, or documented local-provisioner limitation.",
+      "title": "PostgreSQL persistent storage and backup/restore",
+      "objective": "Use a PersistentVolumeClaim for PostgreSQL; verify data survives Pod replacement; perform a pg_dump/restore exercise and document single-node limitations.",
+      "deliverable": "A successful backup and restore plus a documented PVC.",
       "resources": [
         {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
-        },
-        {
-          "name": "Persistent volumes",
+          "name": "Kubernetes persistent volumes",
           "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/"
         },
         {
-          "name": "Application debugging",
-          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
         }
       ],
       "duration_minutes": 60,
@@ -1351,9 +1543,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Inspect a browser PV/PVC example",
-        "Attempt local PVC only if the provisioner works within the session",
-        "Verify persistence or document the limitation"
+        "Inspect PVC and PV binding",
+        "Create sample accounts and transfers",
+        "Use pg_dump to create a backup",
+        "Restore into a disposable database",
+        "Explain why a local PVC is not a production backup strategy"
       ]
     },
     {
@@ -1362,16 +1556,16 @@
       "day_in_week": 5,
       "date": "2027-01-15",
       "title": "RBAC and least privilege",
-      "objective": "Complete browser RBAC practice. Create local ServiceAccount, Role and RoleBinding; allow read/list Pods and prove delete is denied.",
-      "deliverable": "RBAC YAML and evidence of allowed and denied actions.",
+      "objective": "Create a ServiceAccount, Role and RoleBinding; allow read/list of Pods and prove destructive operations are denied; explain service identity.",
+      "deliverable": "A least-privilege RBAC example with one allowed and one denied kubectl action.",
       "resources": [
-        {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
-        },
         {
           "name": "Kubernetes RBAC",
           "url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+        },
+        {
+          "name": "Kubernetes Basics",
+          "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
         }
       ],
       "duration_minutes": 60,
@@ -1381,9 +1575,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete a browser RBAC exercise",
-        "Create local ServiceAccount, Role and RoleBinding",
-        "Test one allowed and one denied kubectl action"
+        "Complete browser RBAC practice",
+        "Create a ServiceAccount",
+        "Grant read/list access to selected resources",
+        "Test allowed and denied operations",
+        "Remove temporary permissions after exercise"
       ]
     },
     {
@@ -1391,21 +1587,25 @@
       "week": 8,
       "day_in_week": 6,
       "date": "2027-01-16",
-      "title": "Kubernetes troubleshooting drills",
-      "objective": "Diagnose ImagePullBackOff, CrashLoopBackOff, failed probe, wrong Service selector and Pending Pod. Use browser for one scenario and reproduce at least two failures locally.",
-      "deliverable": "Symptom/evidence/root-cause/fix/verification matrix with at least four cases.",
+      "title": "Linux host troubleshooting: processes, disk and permissions",
+      "objective": "Use a disposable Linux container or browser lab to investigate CPU/memory pressure, full disk/inodes, permission errors and failed process startup; collect evidence before changing anything.",
+      "deliverable": "A Linux failure matrix with symptom, command, evidence, likely cause and recovery for at least three scenarios.",
       "resources": [
         {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
+          "name": "Linux command line basics",
+          "url": "https://linuxjourney.com/"
         },
         {
-          "name": "Kubernetes application debugging",
-          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+          "name": "ps manual",
+          "url": "https://man7.org/linux/man-pages/man1/ps.1.html"
         },
         {
-          "name": "kubectl quick reference",
-          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+          "name": "df manual",
+          "url": "https://man7.org/linux/man-pages/man1/df.1.html"
+        },
+        {
+          "name": "ss manual",
+          "url": "https://man7.org/linux/man-pages/man8/ss.8.html"
         }
       ],
       "duration_minutes": 60,
@@ -1415,10 +1615,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Diagnose one browser failure scenario",
-        "Reproduce at least two failure modes locally",
-        "Use describe, events, logs, previous logs and endpoints",
-        "Record at least four failure cases"
+        "Inspect processes and resource usage with ps/top",
+        "Inspect disk capacity and inode usage with df",
+        "Inspect file ownership and permissions",
+        "Diagnose a port conflict using ss or lsof",
+        "Capture logs and explain the evidence"
       ]
     },
     {
@@ -1426,13 +1627,17 @@
       "week": 9,
       "day_in_week": 1,
       "date": "2027-01-18",
-      "title": "Operations runbook and checkpoint",
-      "objective": "From clean state deploy, verify readiness, inspect logs/events, diagnose a planted failure, roll out and roll back. Compare browser cluster with local k3d and record single-node limitations.",
-      "deliverable": "One-page Kubernetes runbook and clean redeployment.",
+      "title": "DNS, ports and Kubernetes operations checkpoint",
+      "objective": "Diagnose name resolution and connection failures with curl, dig/getent and ss; then run Kubernetes operations checklist from a clean state.",
+      "deliverable": "A Linux networking checklist plus a clean-state Kubernetes deploy/inspect/troubleshoot/rollback runbook.",
       "resources": [
         {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+          "name": "dig manual",
+          "url": "https://bind9.readthedocs.io/en/latest/manpages.html"
+        },
+        {
+          "name": "ss manual",
+          "url": "https://man7.org/linux/man-pages/man8/ss.8.html"
         },
         {
           "name": "Kubernetes application debugging",
@@ -1450,9 +1655,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Complete one browser Kubernetes troubleshooting scenario",
-        "Perform clean local redeployment",
-        "Record deploy, verify, logs, events, rollout and rollback commands"
+        "Resolve working and failing DNS names in a lab",
+        "Check listeners and test ports with curl",
+        "Distinguish DNS failure, refused connection and timeout",
+        "Deploy and verify API/PostgreSQL workloads",
+        "Inspect events/logs, perform rollback and record k3d limits"
       ]
     },
     {
@@ -1460,21 +1667,13 @@
       "week": 9,
       "day_in_week": 2,
       "date": "2027-01-19",
-      "title": "Observability and the three signals",
-      "objective": "Understand metrics, logs and traces. Explore Grafana Play dashboards and trace investigation. Sketch how one Task API request creates all three signals.",
-      "deliverable": "Signal comparison and request-flow diagram.",
+      "title": "Git workflow and safe change management",
+      "objective": "Learn the practical local Git workflow needed for source control and CI: status, diff, branches, commits, remotes and pull requests; do not publish code before the planned source checkpoint.",
+      "deliverable": "A small feature branch with a reviewed local change and documented path to publish code at the planned checkpoint.",
       "resources": [
         {
-          "name": "Grafana Play",
-          "url": "https://play.grafana.org/"
-        },
-        {
-          "name": "Grafana trace investigation",
-          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
-        },
-        {
-          "name": "OpenTelemetry observability primer",
-          "url": "https://opentelemetry.io/docs/concepts/observability-primer/"
+          "name": "Pro Git book",
+          "url": "https://git-scm.com/book/en/v2"
         }
       ],
       "duration_minutes": 60,
@@ -1484,9 +1683,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Explore public Grafana dashboards",
-        "Follow the trace investigation walkthrough",
-        "Map one Task API request to metric, structured log and trace"
+        "Inspect status and diff before changing files",
+        "Create a feature branch and make a small focused change",
+        "Commit a coherent change and inspect history",
+        "Understand remote, push, pull and pull-request flow",
+        "Identify secrets, state files and local data that must not be committed"
       ]
     },
     {
@@ -1494,17 +1695,21 @@
       "week": 9,
       "day_in_week": 3,
       "date": "2027-01-20",
-      "title": "Instrument FastAPI with Prometheus metrics",
-      "objective": "Add a Prometheus request Counter and duration Histogram; use bounded method, route-template and status labels; expose /metrics and inspect values. Avoid unbounded labels.",
-      "deliverable": "Working /metrics endpoint and explanation of metric types/labels.",
+      "title": "GitHub Actions: automated Python tests and quality checks",
+      "objective": "Create CI that runs unit/integration tests against a PostgreSQL service container and performs lint/format checks on pushes and pull requests.",
+      "deliverable": "A passing GitHub Actions workflow with visible test and quality-check results.",
       "resources": [
         {
-          "name": "Prometheus Python client",
-          "url": "https://prometheus.github.io/client_python/"
+          "name": "GitHub Actions: build and test Python",
+          "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/python"
         },
         {
-          "name": "Prometheus data model",
-          "url": "https://prometheus.io/docs/concepts/data_model/"
+          "name": "pytest getting started",
+          "url": "https://docs.pytest.org/en/stable/getting-started.html"
+        },
+        {
+          "name": "FastAPI testing",
+          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
         }
       ],
       "duration_minutes": 60,
@@ -1514,10 +1719,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Review Prometheus metric types/data model",
-        "Instrument FastAPI with Counter and Histogram",
-        "Generate requests and inspect /metrics",
-        "Explain bounded-label choices"
+        "Read the GitHub Actions Python workflow guide",
+        "Create workflow under .github/workflows",
+        "Set up Python and install project dependencies",
+        "Start PostgreSQL as a workflow service container",
+        "Run pytest and Ruff; fail workflow on errors"
       ]
     },
     {
@@ -1525,17 +1731,21 @@
       "week": 9,
       "day_in_week": 4,
       "date": "2027-01-21",
-      "title": "Prometheus scraping and PromQL",
-      "objective": "Configure Prometheus to scrape the API; verify target health and troubleshoot host/port/path. Write PromQL for request rate, 5xx ratio, latency histogram quantiles and target health.",
-      "deliverable": "Target shows API UP and promql.md contains at least five tested queries.",
+      "title": "Build and publish the container image with CI",
+      "objective": "Extend the workflow to build and publish a tagged app image to GitHub Container Registry only after tests pass; use minimal token permissions and immutable commit tags.",
+      "deliverable": "A workflow run that publishes a versioned image to GHCR after successful tests.",
       "resources": [
         {
-          "name": "Prometheus Getting Started",
-          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
+          "name": "GitHub Actions: publish Docker images",
+          "url": "https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images"
         },
         {
-          "name": "PromQL basics",
-          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+          "name": "Docker build best practices",
+          "url": "https://docs.docker.com/build/building/best-practices/"
+        },
+        {
+          "name": "GitHub Actions: build and test Python",
+          "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/python"
         }
       ],
       "duration_minutes": 60,
@@ -1545,9 +1755,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Configure and verify API scrape target",
-        "Write and test at least five PromQL queries",
-        "Compare instant and range queries"
+        "Add Docker build after CI succeeds",
+        "Tag image with commit SHA and release tag",
+        "Use GITHUB_TOKEN with required package permissions only",
+        "Publish to GHCR and verify package",
+        "Explain image provenance and rollback to a previous tag"
       ]
     },
     {
@@ -1555,21 +1767,17 @@
       "week": 9,
       "day_in_week": 5,
       "date": "2027-01-22",
-      "title": "Structured application logs with Loki and Alloy",
-      "objective": "Emit structured logs to stdout with timestamp, severity, service name and request context. Explore Loki browser quickstart; run Loki + Alloy + Grafana Compose stack locally if memory allows; query ERROR logs with LogQL.",
-      "deliverable": "API logs visible in Loki/Grafana, two LogQL queries and explanation of Alloy/Loki.",
+      "title": "Terraform fundamentals and local workflow",
+      "objective": "Understand providers, resources, variables, outputs, state and write/plan/apply lifecycle; validate a small local or Docker-backed example without cloud changes.",
+      "deliverable": "A small Terraform configuration with successful fmt, init, validate and plan; explain state and lock file.",
       "resources": [
         {
-          "name": "Loki tutorial and interactive quickstart",
-          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
         },
         {
-          "name": "Loki fundamentals GitHub repository",
-          "url": "https://github.com/grafana/loki-fundamentals"
-        },
-        {
-          "name": "LogQL",
-          "url": "https://grafana.com/docs/loki/latest/query/"
+          "name": "Terraform plan",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/cli/plan"
         }
       ],
       "duration_minutes": 60,
@@ -1579,11 +1787,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Explore the Loki interactive quickstart",
-        "Clone grafana/loki-fundamentals at getting-started branch",
-        "Run only the Loki/Alloy/Grafana stack locally",
-        "Generate API logs and query them with LogQL",
-        "Stop the stack after the exercise"
+        "Install/check Terraform CLI",
+        "Read a minimal provider and resource configuration",
+        "Run terraform fmt, init and validate",
+        "Run terraform plan and inspect changes",
+        "Ignore local state, credentials and generated files"
       ]
     },
     {
@@ -1591,25 +1799,21 @@
       "week": 9,
       "day_in_week": 6,
       "date": "2027-01-23",
-      "title": "Distributed tracing with OpenTelemetry and Jaeger",
-      "objective": "Learn traces, spans, parent/child relationships, trace IDs and context propagation. Instrument FastAPI with OpenTelemetry; export OTLP to Jaeger all-in-one and inspect one request. Keep scope to one service.",
-      "deliverable": "A request trace visible in Jaeger and notes identifying trace ID, spans, duration and service.",
+      "title": "Terraform for AWS: configuration and cost review",
+      "objective": "Write a small AWS provider/resource configuration and learn credentials, regions, security groups, variables and outputs; review a plan and estimate costs before any apply.",
+      "deliverable": "A reviewed Terraform plan and cloud deployment checklist; no infrastructure created today.",
       "resources": [
         {
-          "name": "OpenTelemetry Python instrumentation",
-          "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
         },
         {
-          "name": "Jaeger Getting Started",
-          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
+          "name": "Terraform plan",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/cli/plan"
         },
         {
-          "name": "OpenTelemetry Demo repository",
-          "url": "https://github.com/open-telemetry/opentelemetry-demo"
-        },
-        {
-          "name": "OpenTelemetry FastAPI instrumentation",
-          "url": "https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi"
+          "name": "AWS Pricing Calculator",
+          "url": "https://calculator.aws/"
         }
       ],
       "duration_minutes": 60,
@@ -1619,11 +1823,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Read OpenTelemetry Python instrumentation basics",
-        "Run one Jaeger container locally",
-        "Instrument FastAPI and export an OTLP trace",
-        "Inspect one request in Jaeger",
-        "Inspect OpenTelemetry Demo architecture only; do not run full stack"
+        "Read Terraform AWS getting-started guide",
+        "Configure provider, variables and outputs",
+        "Use approved local AWS authentication; never paste keys into chat",
+        "Run and inspect terraform plan only",
+        "Estimate charges and list every resource that needs cleanup"
       ]
     },
     {
@@ -1631,17 +1835,17 @@
       "week": 10,
       "day_in_week": 1,
       "date": "2027-01-25",
-      "title": "Prometheus rules and incident drill 1: target unavailable",
-      "objective": "Create one recording rule and alerts for elevated errors and target absence. Stop the API or make its scrape target unavailable; observe detection, restore and verify recovery.",
-      "deliverable": "rules.yml with one recording rule and two alerts; incidents/incident-01-target-unavailable.md.",
+      "title": "Instrument the Ledger API with Prometheus metrics",
+      "objective": "Add a request Counter and duration Histogram, plus a bounded transfer outcome Counter; use route templates and safe labels, never account IDs or idempotency keys.",
+      "deliverable": "A /metrics endpoint exposing request, latency and transfer outcome metrics with bounded cardinality.",
       "resources": [
         {
-          "name": "Prometheus recording rules",
-          "url": "https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/"
+          "name": "Prometheus Python client",
+          "url": "https://prometheus.github.io/client_python/"
         },
         {
-          "name": "Prometheus alerting rules",
-          "url": "https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/"
+          "name": "Prometheus getting started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
         }
       ],
       "duration_minutes": 60,
@@ -1651,11 +1855,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create and validate Prometheus rules",
-        "Make the target unavailable in the local lab",
-        "Capture alert/target evidence and timeline",
-        "Restore service and verify recovery",
-        "Write incident report 1: cause, mitigation, verification and prevention"
+        "Add request count Counter",
+        "Add request duration Histogram",
+        "Add transfer outcome Counter with bounded result labels",
+        "Expose /metrics",
+        "Inspect labels and remove high-cardinality values"
       ]
     },
     {
@@ -1663,25 +1867,17 @@
       "week": 10,
       "day_in_week": 2,
       "date": "2027-01-26",
-      "title": "Grafana data sources and exploration",
-      "objective": "Connect Grafana to Prometheus; add Loki and Jaeger data sources when those backends are running. Validate each separately; do not run every backend at once.",
-      "deliverable": "Grafana data-source notes and query evidence for all three signals across separate lab runs.",
+      "title": "Prometheus scraping and PromQL for service health",
+      "objective": "Configure Prometheus to scrape the API; verify target health and write queries for request rate, 5xx ratio, latency and transfer outcomes.",
+      "deliverable": "A PromQL worksheet with at least six tested queries and target-health evidence.",
       "resources": [
         {
-          "name": "Grafana with Prometheus",
-          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/get-started-grafana-prometheus/"
+          "name": "Prometheus getting started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
         },
         {
-          "name": "Grafana Play",
-          "url": "https://play.grafana.org/"
-        },
-        {
-          "name": "Grafana data sources",
-          "url": "https://grafana.com/docs/grafana/latest/datasources/"
-        },
-        {
-          "name": "Grafana Jaeger data source",
-          "url": "https://grafana.com/docs/grafana/latest/datasources/jaeger/"
+          "name": "PromQL basics",
+          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
         }
       ],
       "duration_minutes": 60,
@@ -1691,10 +1887,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Connect and query Prometheus",
-        "Start Loki stack separately and configure/query Loki source",
-        "Start Jaeger separately and configure/query trace source",
-        "Record datasource URLs and verified query"
+        "Configure a scrape target for the API",
+        "Verify target is UP and diagnose wrong host/port/path",
+        "Query request rate and error ratio",
+        "Query latency histogram and transfer outcomes",
+        "Explain missing metrics and cardinality limits"
       ]
     },
     {
@@ -1702,21 +1899,25 @@
       "week": 10,
       "day_in_week": 3,
       "date": "2027-01-27",
-      "title": "Build a service dashboard and correlate signals",
-      "objective": "Build dashboard panels for request rate, 5xx rate, latency and target availability. Add log exploration and practise moving from incident time window to related logs/traces; add an annotation.",
-      "deliverable": "Exported dashboard JSON and short investigation guide.",
+      "title": "Grafana SLO dashboards and multi-window burn-rate alerts",
+      "objective": "Define availability and latency SLIs and learning SLOs; calculate error budget; build Grafana panels and a multi-window multi-burn-rate alert for budget consumption.",
+      "deliverable": "slo.md, a Grafana dashboard and tested burn-rate alert with stated windows, assumptions and low-traffic limitations.",
       "resources": [
         {
-          "name": "Grafana dashboard tutorial",
+          "name": "Grafana dashboards",
           "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         },
         {
-          "name": "Grafana trace investigation",
-          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
         },
         {
-          "name": "Grafana Play",
-          "url": "https://play.grafana.org/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
+        },
+        {
+          "name": "Prometheus alerting rules",
+          "url": "https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/"
         }
       ],
       "duration_minutes": 60,
@@ -1726,10 +1927,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Build four useful service panels",
-        "Explore logs and traces for the same test window",
-        "Add an incident annotation",
-        "Explain what each panel can and cannot tell on-call"
+        "Define good/valid request and latency SLIs",
+        "Choose learning-only SLO targets and measurement window",
+        "Calculate error budget and burn rate",
+        "Build request, error, latency and availability panels",
+        "Create and test fast- and slow-burn alert"
       ]
     },
     {
@@ -1737,21 +1939,21 @@
       "week": 10,
       "day_in_week": 4,
       "date": "2027-01-28",
-      "title": "Grafana alerting and incident drill 2: elevated HTTP 5xx",
-      "objective": "Create an alert for elevated 5xx or missing target. Test pending/firing/recovery/no-data. Introduce a temporary local-only 5xx fault, investigate through alert/dashboard/logs/traces, restore normal behaviour and remove the fault.",
-      "deliverable": "Grafana alert, alert runbook and incidents/incident-02-http-5xx.md.",
+      "title": "Incident drill 1: API or database target unavailable",
+      "objective": "Make the API or PostgreSQL target unavailable in a controlled local-only exercise; detect impact with Prometheus/Grafana, restore service and verify recovery.",
+      "deliverable": "incidents/incident-01-target-unavailable.md with timeline, evidence, diagnosis, mitigation and prevention.",
       "resources": [
+        {
+          "name": "Prometheus alerting rules",
+          "url": "https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/"
+        },
         {
           "name": "Grafana Alerting",
           "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
         },
         {
-          "name": "Grafana trace investigation",
-          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
-        },
-        {
-          "name": "Loki tutorial",
-          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
         }
       ],
       "duration_minutes": 60,
@@ -1761,11 +1963,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Create and test Grafana alert states",
-        "Introduce a controlled local-only 5xx failure",
-        "Investigate using dashboard, logs and trace",
-        "Restore app and verify recovery",
-        "Write incident report 2"
+        "Record baseline health and metrics",
+        "Stop API or PostgreSQL service in the lab",
+        "Identify alert and user-visible impact",
+        "Restore service and verify readiness and metrics",
+        "Write incident timeline and follow-up actions"
       ]
     },
     {
@@ -1773,17 +1975,21 @@
       "week": 10,
       "day_in_week": 5,
       "date": "2027-01-29",
-      "title": "SLIs, SLOs and error budgets",
-      "objective": "Define availability and latency indicators; choose learning-only objectives and calculate error budget for a stated window. Explain why small lab data is not production evidence.",
-      "deliverable": "slo.md with definitions, objective, window, query, error budget and limitations.",
+      "title": "Incident drill 2: elevated HTTP 5xx from transfer failures",
+      "objective": "Introduce a temporary fault causing transfer requests to fail; use metrics and application logs to identify the cause; restore normal behaviour and verify no ledger corruption.",
+      "deliverable": "incidents/incident-02-http-5xx.md with HTTP/transfer evidence, database integrity checks and recovery steps.",
       "resources": [
         {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "Grafana dashboards",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         },
         {
-          "name": "PromQL basics",
-          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
+        },
+        {
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
         }
       ],
       "duration_minutes": 60,
@@ -1793,10 +1999,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Define availability and latency SLIs",
-        "Set illustrative learning SLOs",
-        "Calculate error budget for a stated period",
-        "Document measurement limitations"
+        "Record baseline transfer success and error rates",
+        "Introduce a controlled local-only 5xx fault",
+        "Inspect request metrics and structured logs",
+        "Verify debit/credit invariants and database state",
+        "Remove fault, restore service and write report"
       ]
     },
     {
@@ -1804,21 +2011,21 @@
       "week": 10,
       "day_in_week": 6,
       "date": "2027-01-30",
-      "title": "Incident drill 3: elevated latency and signal correlation",
-      "objective": "Introduce temporary local-only API latency. Detect it in dashboard/histogram, find slow request in Jaeger and use logs for context. Restore and verify normal latency.",
-      "deliverable": "incidents/incident-03-high-latency.md with metric/log/trace evidence; all three incident reports complete.",
+      "title": "Incident drill 3: elevated transfer latency",
+      "objective": "Introduce a controlled delay or slow database query; detect it through latency histograms and Grafana, investigate logs and database activity, then restore normal latency.",
+      "deliverable": "incidents/incident-03-high-latency.md with metric evidence, query/connection diagnosis, mitigation and prevention.",
       "resources": [
         {
-          "name": "Grafana trace investigation",
-          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+          "name": "PromQL basics",
+          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
         },
         {
-          "name": "OpenTelemetry Python instrumentation",
-          "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
+          "name": "Grafana dashboards",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         },
         {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
         }
       ],
       "duration_minutes": 60,
@@ -1828,11 +2035,11 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Introduce temporary local-only latency delay",
-        "Detect the change with histogram/dashboard",
-        "Inspect related trace and logs",
-        "Restore normal behaviour and verify",
-        "Write incident report 3 and cross-check all three reports"
+        "Record baseline request latency",
+        "Introduce controlled slow operation or delay",
+        "Identify latency changes in Prometheus and Grafana",
+        "Inspect application logs and PostgreSQL activity",
+        "Restore normal operation and write incident report"
       ]
     },
     {
@@ -1840,33 +2047,21 @@
       "week": 11,
       "day_in_week": 1,
       "date": "2027-02-01",
-      "title": "Core project checkpoint and gap assessment",
-      "objective": "Run a guided end-to-end checkpoint of the Task API, Docker/Compose, Kubernetes and observability work completed so far. Record weak areas to practise independently in Weeks 11–12; this is a checkpoint, not the final presentation.",
-      "deliverable": "A project gap register, verified clean application state and a short list of tasks to repeat without step-by-step instructions.",
+      "title": "Core project checkpoint and cloud readiness review",
+      "objective": "Review ledger invariants, PostgreSQL persistence, container/Kubernetes operations, CI and Prometheus/Grafana; identify weak areas and design a temporary AWS deployment with cost controls.",
+      "deliverable": "A checkpoint checklist and an approved deployment plan with estimated cost, region, resource list, exposure and cleanup steps.",
       "resources": [
         {
-          "name": "Docker Classroom",
-          "url": "https://training.play-with-docker.com/"
+          "name": "AWS Pricing Calculator",
+          "url": "https://calculator.aws/"
         },
         {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+          "name": "AWS Budgets documentation",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
         },
         {
-          "name": "Prometheus Getting Started",
-          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
-        },
-        {
-          "name": "Loki tutorial",
-          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
-        },
-        {
-          "name": "Jaeger Getting Started",
-          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
-        },
-        {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
         }
       ],
       "duration_minutes": 60,
@@ -1876,37 +2071,37 @@
       "completed_at": null,
       "notes": "",
       "tasks": [
-        "Start the API and verify CRUD, tests and health endpoints",
-        "Build and run the container and Compose stack",
-        "Check Kubernetes manifests, deployment, service, probes and rollback",
-        "Verify Prometheus metrics, Loki logs and Jaeger traces using separate stack runs as needed",
-        "Write a gap register: independent, needs notes, needs guidance"
+        "Run core API and database tests",
+        "Verify idempotency and double-entry invariants",
+        "Verify Docker/Compose and Kubernetes runbooks",
+        "Review CI status and image publication",
+        "Estimate cloud spend and decide whether real AWS is acceptable"
       ]
     },
     {
       "id": "D61",
-      "title": "Independent Docker rebuild from a clean state",
-      "objective": "Rebuild the API image and Compose stack from the project README without following the original daily instructions. Diagnose one deliberately introduced Dockerfile/build issue and one port or environment issue.",
-      "deliverable": "A clean reproducible Docker build/Compose run and a short independent troubleshooting record.",
+      "title": "AWS foundations, identity and network design",
+      "objective": "Understand AWS region, EC2, VPC/subnets, security groups, IAM and SSH/Systems Manager access; prepare a tightly scoped deployment design and review cost assumptions.",
+      "deliverable": "A one-page AWS architecture diagram and access/cost checklist; no infrastructure created.",
       "tasks": [
-        "Start from the committed project state and follow only its README",
-        "Build the image and start the API with Compose",
-        "Introduce and diagnose one build/startup failure",
-        "Verify /docs, /healthz and persistent data",
-        "Update README commands if they were incomplete"
+        "Identify required AWS account and region",
+        "Understand EC2, VPC, subnet and security group",
+        "Restrict administration to learner IP or use Systems Manager",
+        "Set explicit time and spend limit",
+        "Review pricing calculator before provisioning"
       ],
       "resources": [
         {
-          "name": "Docker Learn",
-          "url": "https://docs.docker.com/learn/paths/get-started-with-docker-containers/"
+          "name": "Amazon EC2 getting started",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html"
         },
         {
-          "name": "Killercoda Docker scenarios",
-          "url": "https://killercoda.com/docker"
+          "name": "AWS Pricing Calculator",
+          "url": "https://calculator.aws/"
         },
         {
-          "name": "Docker build best practices",
-          "url": "https://docs.docker.com/build/building/best-practices/"
+          "name": "AWS Budgets documentation",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
         }
       ],
       "week": 11,
@@ -1921,28 +2116,28 @@
     },
     {
       "id": "D62",
-      "title": "Docker networking and persistence break/fix lab",
-      "objective": "Independently troubleshoot Compose service discovery, published ports and named-volume persistence. Distinguish a container DNS/network issue from a host port issue and a lost-data issue.",
-      "deliverable": "Three short failure/evidence/fix records covering DNS/networking, port publishing and volume persistence.",
+      "title": "Provision a small AWS host with Terraform",
+      "objective": "Use Terraform to create a temporary modest EC2 host and narrowly scoped network access; inspect plan before apply and record resource identifiers.",
+      "deliverable": "Terraform-managed temporary host with documented network rules and verified secure access.",
       "tasks": [
-        "Create or inspect the Compose network",
-        "Break service-name resolution or network membership and diagnose it",
-        "Break a published port mapping and diagnose it",
-        "Verify database data survives container replacement",
-        "Record the evidence and exact fix for all three failures"
+        "Write Terraform for instance, security group and required role/profile",
+        "Keep database port closed to public internet",
+        "Restrict administration access to learner",
+        "Run terraform fmt, validate and plan",
+        "Apply only after reviewing plan and cost; verify host"
       ],
       "resources": [
         {
-          "name": "Docker networking overview",
-          "url": "https://docs.docker.com/engine/network/"
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
         },
         {
-          "name": "Docker bridge networks",
-          "url": "https://docs.docker.com/engine/network/drivers/bridge/"
+          "name": "Terraform plan",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/cli/plan"
         },
         {
-          "name": "Docker volumes",
-          "url": "https://docs.docker.com/engine/storage/volumes/"
+          "name": "Amazon EC2 getting started",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html"
         }
       ],
       "week": 11,
@@ -1957,28 +2152,28 @@
     },
     {
       "id": "D63",
-      "title": "Kubernetes deployment from a clean state",
-      "objective": "Use the local k3d cluster and project manifests to deploy the API from a clean namespace. Verify Deployment, ReplicaSet, Pod, Service, endpoints and readiness without copying a tutorial.",
-      "deliverable": "Clean deployment evidence and an updated Kubernetes runbook with the deployment sequence.",
+      "title": "Deploy the Ledger API and PostgreSQL to AWS",
+      "objective": "Bootstrap temporary Linux host, install Docker/Compose and deploy API plus PostgreSQL as a single-host learning environment; verify health and execute a test transfer.",
+      "deliverable": "A reachable temporary cloud deployment with health check, successful test transfer and documented single-host limitations.",
       "tasks": [
-        "Use a browser Kubernetes scenario for a short warm-up if useful",
-        "Create or select the learning namespace",
-        "Apply manifests in a deliberate order",
-        "Verify Pod, Deployment, Service, endpoints and readiness",
-        "Save the exact commands and verification output"
+        "Connect using approved secure access method",
+        "Install and verify Docker/Compose",
+        "Deploy API and PostgreSQL with a persistent data volume",
+        "Keep PostgreSQL private; restrict API access during lab",
+        "Verify /healthz, /readyz, account creation and transfer"
       ],
       "resources": [
         {
-          "name": "Killercoda Kubernetes playground",
-          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+          "name": "Amazon EC2 getting started",
+          "url": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html"
         },
         {
-          "name": "Kubernetes Deployments",
-          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+          "name": "Docker Compose getting started",
+          "url": "https://docs.docker.com/compose/gettingstarted/"
         },
         {
-          "name": "Kubernetes Services",
-          "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
+          "name": "Official PostgreSQL Docker image",
+          "url": "https://hub.docker.com/_/postgres"
         }
       ],
       "week": 11,
@@ -1993,28 +2188,32 @@
     },
     {
       "id": "D64",
-      "title": "Kubernetes failure injection and evidence-led diagnosis",
-      "objective": "Independently plant and diagnose selected failures such as a bad image, wrong Service selector or failed readiness probe. Use events, describe, logs and endpoint state to establish the cause before changing anything.",
-      "deliverable": "Three failure records with symptom, command/output evidence, root cause, fix and verification.",
+      "title": "Cloud deployment workflow and Linux operations",
+      "objective": "Practise cloud logs, service restarts, disk/process/network diagnosis and a controlled deployment update; understand short-lived AWS access from GitHub Actions through OIDC/Systems Manager.",
+      "deliverable": "A cloud operations runbook and either a gated deployment workflow or documented manual deployment procedure.",
       "tasks": [
-        "Introduce one bad image in a disposable Deployment and diagnose it",
-        "Introduce a wrong selector or port and diagnose missing endpoints",
-        "Cause a readiness failure and explain its effect",
-        "Use describe, events, logs and endpoint inspection",
-        "Restore the manifests to a healthy state"
+        "Inspect system and container logs",
+        "Diagnose a controlled port, DNS, process or disk issue",
+        "Deploy a new application image and verify rollback",
+        "Review GitHub Actions OIDC trust and least-privilege IAM",
+        "Never store long-lived AWS keys in GitHub or repository"
       ],
       "resources": [
         {
-          "name": "Killercoda Kubernetes scenarios",
-          "url": "https://killercoda.com/kubernetes"
+          "name": "GitHub Actions OIDC with AWS",
+          "url": "https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services"
         },
         {
-          "name": "Kubernetes application debugging",
-          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+          "name": "GitHub Actions: build and test Python",
+          "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/python"
         },
         {
-          "name": "kubectl quick reference",
-          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+          "name": "Linux command line basics",
+          "url": "https://linuxjourney.com/"
+        },
+        {
+          "name": "ss manual",
+          "url": "https://man7.org/linux/man-pages/man8/ss.8.html"
         }
       ],
       "week": 11,
@@ -2029,28 +2228,28 @@
     },
     {
       "id": "D65",
-      "title": "Kubernetes operations runbook challenge",
-      "objective": "Perform an operational sequence from memory: inspect cluster health, verify workloads, check probes/resources, perform rollout/rollback and prove RBAC permissions. Review storage limitations for the single-replica SQLite API.",
-      "deliverable": "An independently usable Kubernetes runbook with deploy, inspect, troubleshoot, rollout, rollback and RBAC verification steps.",
+      "title": "Cloud teardown, cost verification and postmortem",
+      "objective": "Destroy temporary Terraform-managed infrastructure; verify no billable compute/network resources remain and record operational lessons and costs.",
+      "deliverable": "A cleanup checklist with successful terraform destroy, cloud-console verification and short deployment postmortem.",
       "tasks": [
-        "Check cluster and namespace state",
-        "Verify Deployment, probes, resource requests/limits and Service endpoints",
-        "Perform a rolling update and rollback",
-        "Test one permitted and one denied RBAC action",
-        "Document SQLite single-replica and local storage constraints"
+        "Stop deployed service and back up only disposable evidence",
+        "Run terraform destroy against correct workspace",
+        "Verify instance, volumes, public IP and security-group resources are removed",
+        "Check for leftover images, snapshots, log groups or other billable resources",
+        "Record estimated vs actual cost and lessons learned"
       ],
       "resources": [
         {
-          "name": "Kubernetes application debugging",
-          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+          "name": "Terraform destroy infrastructure",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-destroy"
         },
         {
-          "name": "Kubernetes RBAC",
-          "url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+          "name": "AWS Budgets documentation",
+          "url": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
         },
         {
-          "name": "Kubernetes Deployments",
-          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
         }
       ],
       "week": 11,
@@ -2065,20 +2264,19 @@
     },
     {
       "id": "D66",
-      "title": "Prometheus and PromQL independent investigation",
-      "objective": "Work from a small set of service metrics to answer operational questions without following the original PromQL examples. Check request rate, errors, latency and target health; review labels for cardinality risks.",
-      "deliverable": "An observability exercise sheet with at least six tested PromQL queries and explanations.",
+      "title": "Independent Prometheus and PromQL investigation",
+      "objective": "Use Ledger API metrics to answer operational questions without following earlier query examples; inspect request rate, transfer failures, latency and target health.",
+      "deliverable": "At least six tested PromQL queries with explanations and one diagnosis based on metric evidence.",
       "tasks": [
-        "Verify the API target is being scraped",
-        "Query request rate and total volume",
-        "Query 5xx rate and error percentage",
-        "Query histogram-based latency",
-        "Check target health and missing data",
-        "Inspect metric labels and identify high-cardinality risks"
+        "Verify target health",
+        "Query request volume and rate",
+        "Query 5xx and transfer failure ratios",
+        "Query latency histogram",
+        "Identify metric-label cardinality risks"
       ],
       "resources": [
         {
-          "name": "Prometheus Getting Started",
+          "name": "Prometheus getting started",
           "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
         },
         {
@@ -2086,8 +2284,8 @@
           "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
         },
         {
-          "name": "Prometheus data model",
-          "url": "https://prometheus.io/docs/concepts/data_model/"
+          "name": "Prometheus Python client",
+          "url": "https://prometheus.github.io/client_python/"
         }
       ],
       "week": 12,
@@ -2102,28 +2300,28 @@
     },
     {
       "id": "D67",
-      "title": "Loki and LogQL independent log investigation",
-      "objective": "Start the lightweight Loki/Alloy/Grafana stack separately. Generate normal and error API requests, find relevant structured log entries, and explain the difference between log content and indexed labels.",
-      "deliverable": "A small LogQL investigation sheet with queries for service, severity and selected request/trace context; no high-cardinality index labels.",
+      "title": "Independent Grafana dashboard and alert exercise",
+      "objective": "Build or improve the service dashboard from a blank or minimal state; test firing, pending, recovery and no-data behaviour; explain each alert action.",
+      "deliverable": "Exported dashboard JSON, alert rule and short investigation guide.",
       "tasks": [
-        "Start only the Loki/Alloy/Grafana learning stack",
-        "Generate successful and failing API requests",
-        "Find matching entries with LogQL",
-        "Inspect structured fields and trace_id/span_id content where available",
-        "Stop the stack and record the commands"
+        "Connect Grafana to Prometheus",
+        "Build panels for rate, errors, latency and availability",
+        "Add an SLO/error-budget view",
+        "Trigger and recover a controlled alert",
+        "Document one actionable response per alert"
       ],
       "resources": [
         {
-          "name": "Loki tutorial and interactive quickstart",
-          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+          "name": "Grafana dashboards",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         },
         {
-          "name": "Loki fundamentals GitHub repository",
-          "url": "https://github.com/grafana/loki-fundamentals"
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
         },
         {
-          "name": "LogQL",
-          "url": "https://grafana.com/docs/loki/latest/query/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
         }
       ],
       "week": 12,
@@ -2138,32 +2336,36 @@
     },
     {
       "id": "D68",
-      "title": "OpenTelemetry and Jaeger independent trace investigation",
-      "objective": "Run the API with OpenTelemetry instrumentation, generate requests and use Jaeger to inspect trace IDs, spans, parent/child relationships and duration. Relate trace IDs to application log context where configured.",
-      "deliverable": "Two annotated trace examples: one normal request and one slower/failing request, with a short explanation of spans and trace context.",
+      "title": "Structured logs and optional signal extension",
+      "objective": "Use stdout logs, Docker/Kubernetes logs and Linux log tools to build an incident timeline; optionally explore Loki/Alloy or OpenTelemetry/Jaeger, not both as mandatory stack work.",
+      "deliverable": "An annotated log-based incident timeline; optional notes for one selected logging or tracing tool.",
       "tasks": [
-        "Start only Jaeger and the instrumented API",
-        "Generate a normal request and inspect its trace",
-        "Generate a second request with a controlled delay or error",
-        "Compare spans, duration and trace context",
-        "Check whether trace_id/span_id can be found in corresponding logs"
+        "Emit structured logs with timestamp, severity, service and request context",
+        "Inspect Docker Compose logs and kubectl logs",
+        "Correlate one request with metrics using timestamps/request ID",
+        "Choose Loki/Alloy or OpenTelemetry/Jaeger as optional exploration",
+        "Record what aggregation/tracing adds beyond metrics"
       ],
       "resources": [
+        {
+          "name": "Loki tutorial",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        },
+        {
+          "name": "LogQL",
+          "url": "https://grafana.com/docs/loki/latest/query/"
+        },
         {
           "name": "OpenTelemetry Python instrumentation",
           "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
         },
         {
-          "name": "OpenTelemetry FastAPI instrumentation",
-          "url": "https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi"
-        },
-        {
-          "name": "Jaeger Getting Started",
+          "name": "Jaeger getting started",
           "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
         },
         {
-          "name": "Grafana Jaeger data source",
-          "url": "https://grafana.com/docs/grafana/latest/datasources/jaeger/"
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         }
       ],
       "week": 12,
@@ -2178,28 +2380,28 @@
     },
     {
       "id": "D69",
-      "title": "Grafana dashboard, alert and SLO quality review",
-      "objective": "Review whether the dashboard and alerts help an on-call engineer decide what to do. Improve labels/units/thresholds, check pending/firing/recovery/no-data behaviour, and explain the learning SLO and its error budget.",
-      "deliverable": "Reviewed dashboard JSON, tested alert/runbook and an SLO note with explicit lab limitations.",
+      "title": "SLO, burn-rate and alert quality review",
+      "objective": "Review service SLO, error budget, burn-rate rules and dashboard as an on-call engineer; check low-traffic limitations and whether alerts are actionable.",
+      "deliverable": "A reviewed slo.md, dashboard and alert runbook with explicit learning-lab limitations.",
       "tasks": [
-        "Review request, error, latency and availability panels",
-        "Check legends, units, labels and dashboard readability",
-        "Trigger and recover one alert; inspect no-data behaviour",
-        "Review the SLI/SLO calculation and measurement window",
-        "Write one concrete on-call action for each alert"
+        "Recalculate error budget from objective and window",
+        "Inspect multi-window burn-rate alert conditions",
+        "Check alert noise, missing data and recovery behaviour",
+        "Write concrete on-call action for each alert",
+        "Explain why lab traffic is not production reliability evidence"
       ],
       "resources": [
         {
-          "name": "Grafana dashboard tutorial",
-          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
         },
         {
           "name": "Grafana Alerting",
           "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
         },
         {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "Grafana dashboards",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         }
       ],
       "week": 12,
@@ -2214,28 +2416,28 @@
     },
     {
       "id": "D70",
-      "title": "Independent end-to-end incident response drill",
-      "objective": "Choose one controlled local-only failure scenario and investigate it without a step-by-step guide. Use available metric, log, trace and Kubernetes evidence; recover the service and verify the result.",
-      "deliverable": "A fourth incident exercise or tabletop report showing detection, timeline, evidence, diagnosis, mitigation, recovery and prevention.",
+      "title": "Independent end-to-end ledger incident drill",
+      "objective": "Choose a controlled local-only failure such as duplicate transfer, database outage, elevated 5xx, latency or bad deployment; investigate from evidence, recover and prove ledger integrity.",
+      "deliverable": "A fourth incident report showing detection, timeline, impact, evidence, root cause, mitigation, recovery and prevention.",
       "tasks": [
-        "Select one local-only fault: unavailable target, HTTP 5xx, latency, bad rollout or failing probe",
-        "Detect the issue and identify its user/service impact",
-        "Collect relevant metrics, logs, traces and Kubernetes evidence where applicable",
-        "Mitigate, restore and verify service health",
-        "Write the incident timeline and follow-up actions"
+        "Choose one safe, reversible fault scenario",
+        "Detect user impact and identify affected service path",
+        "Use metrics, logs, database and Kubernetes/cloud evidence as available",
+        "Mitigate and restore service",
+        "Verify balances and debit/credit ledger invariants after recovery"
       ],
       "resources": [
         {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
         },
         {
           "name": "Kubernetes application debugging",
           "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
         },
         {
-          "name": "Grafana Alerting",
-          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
+          "name": "PostgreSQL documentation",
+          "url": "https://www.postgresql.org/docs/current/"
         }
       ],
       "week": 12,
@@ -2251,41 +2453,45 @@
     {
       "id": "D71",
       "title": "Final independent capstone and portfolio review",
-      "objective": "Starting from a clean state, demonstrate the Task API, container build/Compose networking, Kubernetes operation and the three observability signals. Explain design choices and limits as if presenting to an SRE/platform engineering interviewer.",
-      "deliverable": "Reproducible project README, clean manifests/configuration, dashboard and alert exports, incident reports and a five-minute capstone walkthrough.",
+      "objective": "Starting from a clean state, demonstrate Ledger API, PostgreSQL transactions/idempotency, Docker/Compose, Kubernetes operations, CI/CD, Terraform cloud deployment evidence, Prometheus/Grafana and incident reports.",
+      "deliverable": "A reproducible portfolio package: architecture, API contract, schema/migrations, CI workflow, Terraform/cleanup notes, dashboard/alerts, incident reports and a five-minute walkthrough.",
       "tasks": [
         "Start from documented clean-state instructions",
-        "Demonstrate API CRUD, validation, tests and persistence",
-        "Demonstrate Docker build, Compose, volume and network behaviour",
-        "Demonstrate Kubernetes deployment, troubleshooting, rollout and rollback",
-        "Demonstrate Prometheus metrics, Loki logs, OpenTelemetry traces and Grafana",
-        "Present three required incident reports plus the additional drill/tabletop",
-        "Write an honest self-assessment of independent skills and production gaps"
+        "Demonstrate account creation, transfer, idempotent retry and insufficient-funds behaviour",
+        "Prove atomic double-entry posting and persistence",
+        "Demonstrate container and Kubernetes operations",
+        "Show CI workflow and image build/publish evidence",
+        "Present metrics, Grafana dashboard, SLO and four incident reports",
+        "Explain cloud deployment, Terraform teardown and production gaps"
       ],
       "resources": [
         {
-          "name": "Docker Learn",
-          "url": "https://docs.docker.com/learn/paths/get-started-with-docker-containers/"
+          "name": "Docker Compose getting started",
+          "url": "https://docs.docker.com/compose/gettingstarted/"
         },
         {
           "name": "Kubernetes Basics",
           "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
         },
         {
-          "name": "Prometheus Getting Started",
+          "name": "GitHub Actions: build and test Python",
+          "url": "https://docs.github.com/en/actions/tutorials/build-and-test-code/python"
+        },
+        {
+          "name": "Terraform AWS getting started",
+          "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started"
+        },
+        {
+          "name": "Prometheus getting started",
           "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
         },
         {
-          "name": "Loki tutorial",
-          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+          "name": "Grafana dashboards",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
         },
         {
-          "name": "Jaeger Getting Started",
-          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
-        },
-        {
-          "name": "Google SRE Workbook",
-          "url": "https://sre.google/workbook/table-of-contents/"
+          "name": "Google SRE Workbook: alerting on SLOs",
+          "url": "https://sre.google/workbook/alerting-on-slos/"
         }
       ],
       "week": 12,
@@ -2303,17 +2509,16 @@
     {
       "week": 1,
       "date": "2026-11-29",
-      "title": "Week 1 review — HTTP foundations and first API setup",
+      "title": "Week 1 review — HTTP foundations and ledger API setup",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Set up the project and explain request/response anatomy, URLs, methods and status codes.",
+      "expected_outcome": "Set up the local lab and explain HTTP requests, methods, status codes and retry/idempotency basics.",
       "checks": [
-        "Link or identify the deliverable that works; do not count reading alone.",
-        "Can I explain request/response lifecycle, URL structure, methods and status code groups?",
-        "What did I get running locally and what evidence proves it?",
-        "Which concept still feels unfamiliar? Write one precise question.",
-        "Did I stay close to the 60-minute target?",
-        "Explain one concept aloud in 2–3 minutes without notes."
+        "Link HTTP notes and verify local environment.",
+        "Can I explain request/response anatomy, methods, status codes and idempotency?",
+        "What did I verify with a real request?",
+        "What remains unclear?",
+        "Did I stay close to 60 minutes?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2321,17 +2526,16 @@
     {
       "week": 2,
       "date": "2026-12-06",
-      "title": "Week 2 review — REST contract and FastAPI fundamentals",
+      "title": "Week 2 review — Ledger API contract and FastAPI fundamentals",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Complete the API contract and create routes using path/query parameters and Pydantic models.",
+      "expected_outcome": "Design account/transfer API contract and create typed FastAPI routes and schemas.",
       "checks": [
-        "Link api-contract.md and the working FastAPI routes/docs.",
-        "Can I explain each resource, route, path/query parameter and request model?",
+        "Link ledger-api-contract.md and FastAPI routes/docs.",
+        "Can I explain each resource, route, path/query parameter and request schema?",
         "Can I use /docs and inspect /openapi.json?",
-        "What did I build without copying the complete example?",
-        "Which validation behaviour remains unclear?",
-        "Did I preserve the Sunday rest/review?"
+        "Can I explain why transfers are immutable and retries need idempotency?",
+        "What would I simplify?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2339,17 +2543,16 @@
     {
       "week": 3,
       "date": "2026-12-13",
-      "title": "Week 3 review — Build the Task API: CRUD",
+      "title": "Week 3 review — Ledger API behaviour and in-memory transfers",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Implement create/list/retrieve/update/delete and consistent validation/error behaviour.",
+      "expected_outcome": "Implement account operations and a validated transfer flow before persistence.",
       "checks": [
-        "Link the working CRUD endpoints and manual test evidence.",
-        "Can I create, list, retrieve, update and delete tasks without a tutorial?",
-        "Are missing IDs and invalid input handled predictably?",
-        "What does each endpoint return and with which status code?",
-        "What failed and how did I prove the fix?",
-        "What should be repeated before persistence?"
+        "Link account/transfer examples and manual tests.",
+        "Can I create accounts and make a valid transfer?",
+        "Do insufficient-funds and currency errors behave predictably?",
+        "Are balances and ledger entries consistent?",
+        "What needs database persistence?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2357,17 +2560,16 @@
     {
       "week": 4,
       "date": "2026-12-20",
-      "title": "Week 4 review — Persist API data with SQLite",
+      "title": "Week 4 review — PostgreSQL and persistence",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Use SQLModel, sessions and dependencies so data survives restarts.",
+      "expected_outcome": "Model relational data and persist accounts, transfers and ledger history in PostgreSQL.",
       "checks": [
-        "Link models, database/session code and persistence evidence.",
-        "Can I explain engine, model, session, dependency and commit?",
-        "Does data survive an application restart?",
-        "Did I test integrity/duplicate or invalid records?",
-        "What database concept needs another pass?",
-        "What can I now perform independently?"
+        "Link PostgreSQL schema, models and session dependency.",
+        "Can I explain tables, keys, constraints and request-scoped sessions?",
+        "Does account data survive an API restart?",
+        "Can I inspect data with SQL?",
+        "Which database concept needs another pass?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2375,17 +2577,16 @@
     {
       "week": 5,
       "date": "2026-12-27",
-      "title": "Week 5 review — Test and harden the API",
+      "title": "Week 5 review — Transactions, idempotency and tests",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Refactor, write tests, configure errors/logging/health and verify the service.",
+      "expected_outcome": "Guarantee atomic double-entry transfers; add idempotency, migrations and tests.",
       "checks": [
-        "Link tests, config, logging and health endpoint evidence.",
-        "Can I run tests and interpret failures?",
-        "Do tests use an isolated test database?",
-        "Are errors and health/readiness behaviour clear?",
-        "What did I refactor and why?",
-        "Is the API ready to containerise?"
+        "Link migrations, tests and idempotency/rollback evidence.",
+        "Can I explain a transaction boundary and rollback?",
+        "Does an identical retry avoid a duplicate transfer?",
+        "Do tests prove the ledger stays balanced?",
+        "What failure needs another test?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2393,17 +2594,16 @@
     {
       "week": 6,
       "date": "2027-01-03",
-      "title": "Week 6 review — API checkpoint and Docker foundations",
+      "title": "Week 6 review — Health, logging and Docker foundations",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Checkpoint the API and build/run the first container, inspect it and persist data.",
+      "expected_outcome": "Harden the service, build an image, understand container lifecycle and persist PostgreSQL data.",
       "checks": [
-        "Link Dockerfile, image, Compose file and volume test.",
-        "Can I build/run/inspect the image?",
-        "Can I explain writable layer vs named volume?",
-        "Does the API work through a published port?",
-        "Did I verify Colima and Compose work without Docker Desktop?",
-        "What will I practise next week?"
+        "Link health endpoints, Dockerfile, Compose and volume evidence.",
+        "Can I build and inspect an image?",
+        "Does the API connect to PostgreSQL by service name?",
+        "Does data survive container replacement?",
+        "What will I practise in Kubernetes?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2411,16 +2611,15 @@
     {
       "week": 7,
       "date": "2027-01-10",
-      "title": "Week 7 review — Docker networking and Kubernetes fundamentals",
+      "title": "Week 7 review — Compose networking and Kubernetes fundamentals",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Complete Compose networking and deploy Kubernetes workloads, Services and rollouts.",
+      "expected_outcome": "Run API/PostgreSQL with Compose and deploy the service stack to local k3d.",
       "checks": [
         "Link Compose network and Kubernetes manifests.",
-        "Can containers communicate by service name?",
-        "Can I explain Pod, Deployment, ReplicaSet and Service?",
-        "Can I verify selectors/endpoints and perform a rollout/rollback?",
-        "Why does the SQLite API stay at one replica?",
+        "Can I explain Pod, Deployment, StatefulSet and Service?",
+        "Can API resolve PostgreSQL inside cluster?",
+        "Can I perform rollout/rollback safely?",
         "What differed between browser and local labs?"
       ],
       "completed_at": null,
@@ -2429,17 +2628,16 @@
     {
       "week": 8,
       "date": "2027-01-17",
-      "title": "Week 8 review — Kubernetes operations and troubleshooting",
+      "title": "Week 8 review — Kubernetes operations and Linux troubleshooting",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Operate probes, resources, storage, RBAC and diagnose failure states.",
+      "expected_outcome": "Operate probes, resources, storage and RBAC; diagnose Linux host and network failures.",
       "checks": [
-        "Link the Kubernetes runbook and failure matrix.",
-        "Can I distinguish liveness, readiness and startup probes?",
-        "Can I explain requests, limits and OOMKilled evidence?",
-        "Can I prove one allowed and one denied RBAC action?",
-        "Which failures did I diagnose and what evidence proved each cause?",
-        "What needs repeating independently?"
+        "Link Kubernetes runbook and Linux failure matrix.",
+        "Can I diagnose process, disk, permissions, DNS and port failures?",
+        "Can I explain probes, resources, storage and RBAC?",
+        "What evidence proved root cause?",
+        "Which issue needs guided practice?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2447,17 +2645,16 @@
     {
       "week": 9,
       "date": "2027-01-24",
-      "title": "Week 9 review — Kubernetes checkpoint and observability foundations",
+      "title": "Week 9 review — Git, CI/CD and Terraform foundations",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Run the cluster runbook and learn metrics, logs and traces.",
+      "expected_outcome": "Use a safe Git workflow, automate Python tests/image publishing and learn Terraform planning.",
       "checks": [
-        "Link /metrics, promql.md, LogQL queries, trace evidence and cluster runbook.",
-        "Can I explain what metrics, logs and traces each tell me?",
-        "Can I query request rate, 5xx ratio and latency in PromQL?",
-        "Can I find application errors in Loki with LogQL?",
-        "Can I inspect a request trace and explain its spans?",
-        "What is still guided rather than independent?"
+        "Link Git change history and passing Actions run.",
+        "Can I read a workflow and diagnose failed CI?",
+        "Does image publish only after tests pass?",
+        "Can I explain Terraform plan/state/destroy?",
+        "Are secrets and state excluded?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2465,18 +2662,16 @@
     {
       "week": 10,
       "date": "2027-01-31",
-      "title": "Week 10 review — Metrics, logs, traces, alerting and incident response",
+      "title": "Week 10 review — Prometheus, Grafana, SLOs and incident response",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Query metrics/logs/traces, build rules/dashboard/alerts, and complete the three required incident drills: target unavailable, elevated HTTP 5xx and elevated latency.",
+      "expected_outcome": "Build service metrics, PromQL, Grafana dashboards, burn-rate alerts and three incidents.",
       "checks": [
-        "Link dashboard JSON, alert runbook, SLO note and incident report 1.",
-        "Can I use Grafana to assess request rate, errors, latency and availability?",
-        "Can I move from an alert/time window to related logs and traces?",
-        "Incident 1: target unavailable — report complete?",
-        "Incident 2: elevated HTTP 5xx — report complete?",
-        "Incident 3: elevated latency — report complete?",
-        "Are faults local-only and has normal service state been restored?"
+        "Link /metrics, PromQL worksheet, dashboard, SLO and burn-rate alert.",
+        "Can I query request rate, 5xx ratio and latency?",
+        "Can I explain SLI, SLO, error budget and burn rate?",
+        "Are alerts actionable and tested?",
+        "Are three incident reports complete?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2484,18 +2679,16 @@
     {
       "week": 11,
       "date": "2027-02-07",
-      "title": "Week 11 review — Independent container and Kubernetes labs",
+      "title": "Week 11 review — Temporary AWS deployment and operations",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Repeat Docker and Kubernetes work from a clean state; break/fix and document evidence.",
+      "expected_outcome": "Provision a small cloud host with Terraform, deploy the stack, troubleshoot and destroy it.",
       "checks": [
-        "Link clean-state Docker/Kubernetes runbooks and failure records.",
-        "Can I rebuild and redeploy from documentation alone?",
-        "Can I diagnose container network/volume problems independently?",
-        "Can I deploy a workload and diagnose a planted Kubernetes failure?",
-        "Can I roll back and prove RBAC permissions?",
-        "What still requires step-by-step guidance?",
-        "Which exercise should receive one more repetition?"
+        "Link Terraform config, deployment diagram and cleanup evidence.",
+        "Can I explain every cloud resource and its cost?",
+        "Was access restricted and PostgreSQL kept private?",
+        "Did I verify destroy and check leftovers?",
+        "What would I change before production?"
       ],
       "completed_at": null,
       "notes": ""
@@ -2503,30 +2696,62 @@
     {
       "week": 12,
       "date": "2027-02-14",
-      "title": "Week 12 review — Independent observability and final capstone",
+      "title": "Week 12 review — Independent SRE capstone",
       "duration_minutes": 20,
       "status": "pending",
-      "expected_outcome": "Investigate metrics/logs/traces, improve alert quality, run an independent incident and present the project.",
+      "expected_outcome": "Independently investigate the service, review alerts and present the complete ledger reliability project.",
       "checks": [
-        "Link updated README, dashboards, alert, all incident reports and capstone notes.",
-        "Can I investigate metrics, logs and traces without a step-by-step guide?",
-        "Can I explain alert/SLO choices and their limitations?",
-        "Is the final demo reproducible from a clean state?",
-        "Can I explain platform/SRE trade-offs clearly?",
-        "What can I do independently and what still needs production experience?",
-        "Choose the next learning priority based on evidence."
+        "Link capstone README, dashboard, CI, Terraform and reports.",
+        "Can I demonstrate idempotent transfers and atomic double-entry posting?",
+        "Can I troubleshoot without a step-by-step guide?",
+        "Can I present CI/CD, cloud and SLO decisions clearly?",
+        "What can I do independently; what still needs production experience?"
       ],
       "completed_at": null,
       "notes": ""
     }
   ],
   "last_updated": "2026-11-24",
-  "migration_note": "Revised on 2026-11-23 after learner clarified that Python fundamentals are not needed. Week 1 now covers HTTP/API foundations; Week 2 starts FastAPI directly. No previously completed sessions existed; all 60 sessions remain not_started. Further updated the Week 6–10 lab overlay on 2026-11-23 to add free browser labs paired with local Colima/k3d work, Docker networking, Loki/Alloy logs, OpenTelemetry/Jaeger traces and three explicit incident drills. Existing progress statuses and notes were preserved. Rebased on 2026-11-23 for a Tuesday 2026-11-24 start. Sundays remain review/rest days. Week 1 is a five-session kickoff; Weeks 2–12 each contain six sessions. Added 11 consolidation sessions D61–D71. Existing session statuses were preserved as not_started; finish moved to 2027-02-13 and final review to 2027-02-14.",
-  "lab_method": "For D31-D71, use a short free browser lab when available (about 10–15 minutes inside the guided-practice block), then reproduce the concept locally and save evidence in this repository. Keep each study session to 60 minutes. Browser environments are disposable; the local project is the source of truth.",
-  "browser_lab_safety": "Do not enter production credentials, tokens or personal data into public labs. Killercoda free scenarios are time-limited and ephemeral. Public demo datasets can reset.",
+  "migration_note": "Revised on 2026-11-23 after learner clarified that Python fundamentals are not needed. Week 1 now covers HTTP/API foundations; Week 2 starts FastAPI directly. No previously completed sessions existed; all 60 sessions remain not_started. Further updated the Week 6–10 lab overlay on 2026-11-23 to add free browser labs paired with local Colima/k3d work, Docker networking, Loki/Alloy logs, OpenTelemetry/Jaeger traces and three explicit incident drills. Existing progress statuses and notes were preserved. Rebased on 2026-11-23 for a Tuesday 2026-11-24 start. Sundays remain review/rest days. Week 1 is a five-session kickoff; Weeks 2–12 each contain six sessions. Added 11 consolidation sessions D61–D71. Existing session statuses were preserved as not_started; finish moved to 2027-02-13 and final review to 2027-02-14. Revised on 2026-11-24 after external review: changed generic Task API to a simulated double-entry Ledger API; replaced SQLite with PostgreSQL; added idempotency, atomic transfers, concurrency, Alembic, CI/CD, Terraform, a cost-controlled AWS EC2 deployment, Linux host/network troubleshooting and SLO burn-rate alerts. Prometheus/Grafana are core; Loki/Alloy and OpenTelemetry/Jaeger are optional. Added a separate two-times-weekly DSA side track outside core sessions. Preserved 71 session dates, review cadence, optional extension totals and prior completion evidence.",
+  "lab_method": "For D31-D48 use short browser Docker/Kubernetes/Linux labs as a supplement and reproduce key behaviour locally through Colima/k3d. D49-D71 focus on GitHub Actions, Terraform, controlled cloud deployment, Prometheus/Grafana and independent troubleshooting. Browser labs are disposable; save evidence in the local project.",
+  "browser_lab_safety": "Do not enter production credentials, AWS keys, tokens or personal data into public labs. Browser scenarios are disposable and may reset. Use fake database passwords in local examples.",
   "observability_signals": [
-    "metrics: Prometheus",
-    "logs: structured stdout, Grafana Alloy and Loki",
-    "traces: OpenTelemetry and Jaeger"
-  ]
+    "core metrics: Prometheus request/latency/transfer metrics and PromQL",
+    "core dashboards/alerts: Grafana with SLO and multi-window burn-rate alerting",
+    "core logs: structured application stdout and Docker/Kubernetes/cloud log inspection",
+    "optional log aggregation: Grafana Alloy and Loki",
+    "optional tracing: OpenTelemetry and Jaeger"
+  ],
+  "aws_lab_safety": "AWS resources can incur charges and free-tier eligibility is not guaranteed. Review AWS Pricing Calculator, restrict inbound access, avoid NAT gateways/load balancers/managed Kubernetes for this lab, set a time/spend limit, run terraform destroy and verify cleanup. Never paste credentials into chat or commit secrets or Terraform state.",
+  "interview_track": {
+    "name": "Python DSA interview practice",
+    "cadence": "Two optional 15-minute sessions per week, outside the 60-minute core curriculum",
+    "total_sessions": 24,
+    "counted_in_core_hours": false,
+    "approach": "Use Python for problem solving; this is not a Python syntax course. Attempt a focused problem, state complexity, compare an alternative and record one mistake or pattern.",
+    "weekly_topics": [
+      "Complexity, arrays and hash maps",
+      "Strings, frequency maps and two pointers",
+      "Sliding window and prefix sums",
+      "Stacks and queues",
+      "Binary search and sorted invariants",
+      "Linked lists and pointer manipulation",
+      "Trees: traversal and recursion",
+      "Heaps and top-K patterns",
+      "Graphs: BFS and DFS",
+      "Intervals and greedy patterns",
+      "Mixed timed practice and reviewing weak patterns",
+      "Mock interview sets and revision"
+    ],
+    "resources": [
+      {
+        "name": "LeetCode problem set",
+        "url": "https://leetcode.com/problemset/"
+      },
+      {
+        "name": "NeetCode roadmap",
+        "url": "https://neetcode.io/roadmap"
+      }
+    ]
+  }
 }
