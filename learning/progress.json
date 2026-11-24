@@ -1,0 +1,2532 @@
+{
+  "schema_version": 2,
+  "programme": "Twelve-week API Foundations, Platform & Reliability Engineering",
+  "project": "reliability-lab-api",
+  "timezone": "Asia/Kolkata",
+  "start_date": "2026-11-24",
+  "planned_finish_date": "2027-02-13",
+  "final_review_date": "2027-02-14",
+  "assumptions": {
+    "api_experience": "Assume no current API-building experience and no reliable recall of FastAPI; teach HTTP and API design first, then build the app step by step.",
+    "python_experience": "Do not schedule Python fundamentals. Assume the learner knows Python and can read/write ordinary application code; only cover environment and dependency setup as needed for the project.",
+    "container_runtime": "Reuse existing Colima Docker runtime.",
+    "daily_target_minutes": 60,
+    "optional_extensions": "Selected sessions include an optional 15-minute stretch; never required.",
+    "project_approach": "Start with the request/response model and endpoint contract before implementing routes. Avoid large code dumps; build one endpoint at a time and explain each decision."
+  },
+  "cadence": {
+    "daily_minutes": 60,
+    "study_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "first_week_exception": "Start Tuesday 24 November 2026; Week 1 has five study sessions (Tuesday–Saturday). Sundays remain review/rest days.",
+    "weekly_review_minutes": 20,
+    "rest_day": "Sunday after review"
+  },
+  "totals": {
+    "study_sessions": 71,
+    "base_study_hours": 71,
+    "optional_extension_sessions": 27,
+    "optional_extension_minutes": 405,
+    "weekly_reviews": 12,
+    "review_minutes": 240
+  },
+  "completed_sessions": 1,
+  "completion_percent": 1.4,
+  "days": [
+    {
+      "id": "D1",
+      "week": 1,
+      "day_in_week": 1,
+      "date": "2026-11-24",
+      "title": "API lab setup and first FastAPI process",
+      "objective": "Verify the existing Colima/Docker setup without changing it; check Python/Git versions; create the reliability-lab-api folder and virtual environment; install FastAPI; create a minimal app and run it locally.",
+      "deliverable": "A minimal FastAPI application running locally, a clean project folder, .venv excluded from Git, and /docs opening in the browser.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        },
+        {
+          "name": "Python virtual environments",
+          "url": "https://docs.python.org/3/library/venv.html"
+        },
+        {
+          "name": "Pro Git book",
+          "url": "https://git-scm.com/book/en/v2"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "completed",
+      "completed_at": "2026-11-24",
+      "notes": "Completed and verified interactively. Colima started successfully; Docker uses the colima context and the Docker CLI discovers the Homebrew Compose plugin. Python 3.14.2 and Git 2.56.1 available. Created reliability-lab-api with an active .venv, .gitignore excluding .venv and Python cache files, and installed FastAPI 0.165.0 (fastapi[standard]). Created main.py with GET / returning {\"message\":\"Hello, world!\"}. FastAPI dev server started at http://127.0.0.1:8000; terminal logs confirm GET /, /docs, and /openapi.json returned HTTP 200. favicon.ico 404 is harmless.",
+      "tasks": [
+        "Verify the existing Colima/Docker setup without changing it",
+        "check Python/Git versions",
+        "create the reliability-lab-api folder and virtual environment",
+        "install FastAPI",
+        "create a minimal app and run it locally."
+      ]
+    },
+    {
+      "id": "D2",
+      "week": 1,
+      "day_in_week": 2,
+      "date": "2026-11-25",
+      "title": "HTTP request and response anatomy",
+      "objective": "Understand client, server, request line, URL, headers, body, response status, headers and body; inspect real requests using curl and browser developer tools.",
+      "deliverable": "A labelled request/response example for GET /tasks and POST /tasks, showing method, path, headers, JSON body and response.",
+      "resources": [
+        {
+          "name": "MDN HTTP overview",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+        },
+        {
+          "name": "MDN HTTP messages",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Messages"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Understand client, server, request line, URL, headers, body, response status, headers and body",
+        "inspect real requests using curl and browser developer tools."
+      ]
+    },
+    {
+      "id": "D3",
+      "week": 1,
+      "day_in_week": 3,
+      "date": "2026-11-26",
+      "title": "URLs, routes, headers and JSON",
+      "objective": "Understand scheme, host, port, path and query string; distinguish request headers from JSON body; inspect JSON responses and content types.",
+      "deliverable": "A short note explaining the parts of a URL and two curl examples showing headers and JSON responses.",
+      "resources": [
+        {
+          "name": "MDN HTTP overview",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+        },
+        {
+          "name": "MDN HTTP messages",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Messages"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Compare the same request with and without an Accept header using curl.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Understand scheme, host, port, path and query string",
+        "distinguish request headers from JSON body",
+        "inspect JSON responses and content types."
+      ]
+    },
+    {
+      "id": "D4",
+      "week": 1,
+      "day_in_week": 4,
+      "date": "2026-11-27",
+      "title": "HTTP methods and API actions",
+      "objective": "Map GET, POST, PATCH and DELETE to read/create/partial-update/delete operations; inspect safe and idempotent behaviour at a practical level.",
+      "deliverable": "A method-to-action table for the Task API and curl examples for GET and POST against a public test API.",
+      "resources": [
+        {
+          "name": "MDN HTTP methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        },
+        {
+          "name": "JSONPlaceholder test API",
+          "url": "https://jsonplaceholder.typicode.com/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Map GET, POST, PATCH and DELETE to read/create/partial-update/delete operations",
+        "inspect safe and idempotent behaviour at a practical level."
+      ]
+    },
+    {
+      "id": "D5",
+      "week": 1,
+      "day_in_week": 5,
+      "date": "2026-11-28",
+      "title": "HTTP status codes and error responses",
+      "objective": "Understand 2xx success, 3xx redirection, 4xx client errors and 5xx server errors; distinguish 400, 401, 403, 404, 405, 409, 422 and 500.",
+      "deliverable": "A status-code decision table for Task API success, validation failure, missing task and unexpected server error.",
+      "resources": [
+        {
+          "name": "MDN HTTP status codes",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"
+        },
+        {
+          "name": "FastAPI response status codes",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Understand 2xx success, 3xx redirection, 4xx client errors and 5xx server errors",
+        "distinguish 400, 401, 403, 404, 405, 409, 422 and 500."
+      ]
+    },
+    {
+      "id": "D6",
+      "week": 2,
+      "day_in_week": 1,
+      "date": "2026-11-30",
+      "title": "REST resource design and API contract",
+      "objective": "Design the Task resource and endpoint set; distinguish path parameters, query parameters and request bodies; decide what each endpoint returns before implementing it.",
+      "deliverable": "api-contract.md with method, path, purpose, example request, example response and expected status for each endpoint.",
+      "resources": [
+        {
+          "name": "MDN HTTP methods",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods"
+        },
+        {
+          "name": "FastAPI path parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/path-params/"
+        },
+        {
+          "name": "FastAPI query parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/query-params/"
+        },
+        {
+          "name": "JSONPlaceholder test API",
+          "url": "https://jsonplaceholder.typicode.com/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Review the contract and remove any endpoint or field that is not necessary for the learning project.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Design the Task resource and endpoint set",
+        "distinguish path parameters, query parameters and request bodies",
+        "decide what each endpoint returns before implementing it."
+      ]
+    },
+    {
+      "id": "D7",
+      "week": 2,
+      "day_in_week": 2,
+      "date": "2026-12-01",
+      "title": "FastAPI routes and interactive documentation",
+      "objective": "Read the small app created in Week 1; understand the FastAPI app instance and route decorator; add GET / and GET /about; inspect /docs and /openapi.json.",
+      "deliverable": "A minimal app with two working GET endpoints and readable JSON responses.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Inspect the generated OpenAPI document and find the two route definitions.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Read the small app created in Week 1",
+        "understand the FastAPI app instance and route decorator",
+        "add GET / and GET /about",
+        "inspect /docs and /openapi.json."
+      ]
+    },
+    {
+      "id": "D8",
+      "week": 2,
+      "day_in_week": 3,
+      "date": "2026-12-02",
+      "title": "GET endpoints and response data",
+      "objective": "Create GET /tasks returning a list; start with a small in-memory collection; use curl and Swagger UI to inspect the response JSON.",
+      "deliverable": "GET /tasks returns a predictable JSON list and an empty-list case.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        },
+        {
+          "name": "MDN HTTP overview",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add one query parameter to control the maximum number of returned tasks.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create GET /tasks returning a list",
+        "start with a small in-memory collection",
+        "use curl and Swagger UI to inspect the response JSON."
+      ]
+    },
+    {
+      "id": "D9",
+      "week": 2,
+      "day_in_week": 4,
+      "date": "2026-12-03",
+      "title": "Path parameters",
+      "objective": "Create GET /tasks/{task_id}; use an integer path parameter; test valid, missing and invalid ID formats; observe FastAPI validation.",
+      "deliverable": "A detail endpoint that returns the requested task and a clear not-found response.",
+      "resources": [
+        {
+          "name": "FastAPI path parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/path-params/"
+        },
+        {
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Explain the difference between a route path and the value supplied for a path parameter.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create GET /tasks/{task_id}",
+        "use an integer path parameter",
+        "test valid, missing and invalid ID formats",
+        "observe FastAPI validation."
+      ]
+    },
+    {
+      "id": "D10",
+      "week": 2,
+      "day_in_week": 5,
+      "date": "2026-12-04",
+      "title": "Query parameters and filtering",
+      "objective": "Add optional query parameters such as completed and limit; filter the in-memory task list; understand defaults and optional values.",
+      "deliverable": "GET /tasks supports a completion filter and limit with documented examples.",
+      "resources": [
+        {
+          "name": "FastAPI query parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/query-params/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Test combinations of filters and document what happens when no tasks match.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Add optional query parameters such as completed and limit",
+        "filter the in-memory task list",
+        "understand defaults and optional values."
+      ]
+    },
+    {
+      "id": "D11",
+      "week": 2,
+      "day_in_week": 6,
+      "date": "2026-12-05",
+      "title": "Request bodies and Pydantic models",
+      "objective": "Create a TaskCreate Pydantic model; accept JSON in POST /tasks; try valid and invalid payloads; inspect validation errors.",
+      "deliverable": "POST /tasks accepts a validated JSON request body and returns the created task.",
+      "resources": [
+        {
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add a sensible title length constraint and test both boundary cases.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create a TaskCreate Pydantic model",
+        "accept JSON in POST /tasks",
+        "try valid and invalid payloads",
+        "inspect validation errors."
+      ]
+    },
+    {
+      "id": "D12",
+      "week": 3,
+      "day_in_week": 1,
+      "date": "2026-12-07",
+      "title": "Response models and validation",
+      "objective": "Create a TaskResponse model; define fields returned by the API; distinguish input schema and output schema; inspect the generated OpenAPI docs.",
+      "deliverable": "Task endpoints use explicit response models and return a consistent JSON shape.",
+      "resources": [
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+        },
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add a test/example proving internal-only fields are not returned.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create a TaskResponse model",
+        "define fields returned by the API",
+        "distinguish input schema and output schema",
+        "inspect the generated OpenAPI docs."
+      ]
+    },
+    {
+      "id": "D13",
+      "week": 3,
+      "day_in_week": 2,
+      "date": "2026-12-08",
+      "title": "Pydantic request models",
+      "objective": "Create a TaskCreate model; accept a JSON body in POST /tasks; try valid and invalid payloads; read validation errors.",
+      "deliverable": "POST /tasks accepts a validated request body.",
+      "resources": [
+        {
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D14",
+      "week": 3,
+      "day_in_week": 3,
+      "date": "2026-12-09",
+      "title": "Create and list tasks",
+      "objective": "Implement POST /tasks and GET /tasks using an in-memory list and generated IDs; return 201 on creation.",
+      "deliverable": "Create/list flow demonstrated with at least three tasks.",
+      "resources": [
+        {
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+        },
+        {
+          "name": "FastAPI response status codes",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D15",
+      "week": 3,
+      "day_in_week": 4,
+      "date": "2026-12-10",
+      "title": "Retrieve one task and handle missing IDs",
+      "objective": "Implement GET /tasks/{task_id}; return 404 for unknown IDs; distinguish missing resources from invalid input.",
+      "deliverable": "A detail endpoint with correct 200 and 404 behaviours.",
+      "resources": [
+        {
+          "name": "FastAPI path parameters",
+          "url": "https://fastapi.tiangolo.com/tutorial/path-params/"
+        },
+        {
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Test existing ID, missing ID and invalid ID format.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D16",
+      "week": 3,
+      "day_in_week": 5,
+      "date": "2026-12-11",
+      "title": "Update tasks with PATCH",
+      "objective": "Create TaskUpdate model with optional fields; update only provided values; ensure omitted fields remain unchanged.",
+      "deliverable": "PATCH /tasks/{task_id} updates title or completed state and returns the updated task.",
+      "resources": [
+        {
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D17",
+      "week": 3,
+      "day_in_week": 6,
+      "date": "2026-12-12",
+      "title": "Delete tasks and status codes",
+      "objective": "Implement DELETE /tasks/{task_id}; choose and document 204 or a response body; handle unknown IDs consistently.",
+      "deliverable": "Full in-memory CRUD API with documented success and failure status codes.",
+      "resources": [
+        {
+          "name": "FastAPI response status codes",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+        },
+        {
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D18",
+      "week": 4,
+      "day_in_week": 1,
+      "date": "2026-12-14",
+      "title": "API contract and manual test pass",
+      "objective": "Define response models; check /docs and /openapi.json; exercise every endpoint using curl or Swagger UI; record example requests.",
+      "deliverable": "Endpoint reference table and manual test checklist with success/error cases.",
+      "resources": [
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+        },
+        {
+          "name": "FastAPI response status codes",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+        },
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Explain the request/response lifecycle for POST /tasks from memory.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D19",
+      "week": 4,
+      "day_in_week": 2,
+      "date": "2026-12-15",
+      "title": "Relational data refresher",
+      "objective": "Refresh tables, rows, columns, primary keys, uniqueness and basic SELECT/INSERT/UPDATE/DELETE; inspect SQLite with Python.",
+      "deliverable": "A small SQLite database with a tasks table and a few rows.",
+      "resources": [
+        {
+          "name": "Python sqlite3",
+          "url": "https://docs.python.org/3/library/sqlite3.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D20",
+      "week": 4,
+      "day_in_week": 3,
+      "date": "2026-12-16",
+      "title": "Introduce SQLModel and database models",
+      "objective": "Follow FastAPI SQL database tutorial; install SQLModel; define Task table model; create SQLite engine and database file.",
+      "deliverable": "A Task table is created from the model in the lab.",
+      "resources": [
+        {
+          "name": "FastAPI SQL databases / SQLModel",
+          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+        },
+        {
+          "name": "Python sqlite3",
+          "url": "https://docs.python.org/3/library/sqlite3.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D21",
+      "week": 4,
+      "day_in_week": 4,
+      "date": "2026-12-17",
+      "title": "Database sessions and dependencies",
+      "objective": "Understand database session, opening/closing a session and FastAPI dependency injection; add a get_session dependency.",
+      "deliverable": "A request-scoped database session dependency with clear cleanup.",
+      "resources": [
+        {
+          "name": "FastAPI SQL databases / SQLModel",
+          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+        },
+        {
+          "name": "FastAPI dependencies",
+          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Trace one request and explain when its database session is created and closed.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D22",
+      "week": 4,
+      "day_in_week": 5,
+      "date": "2026-12-18",
+      "title": "Persist task creation and listing",
+      "objective": "Replace in-memory list with SQLModel inserts and selects; restart app and confirm data remains.",
+      "deliverable": "POST and GET /tasks use SQLite persistence.",
+      "resources": [
+        {
+          "name": "FastAPI SQL databases / SQLModel",
+          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+        },
+        {
+          "name": "Python sqlite3",
+          "url": "https://docs.python.org/3/library/sqlite3.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D23",
+      "week": 4,
+      "day_in_week": 6,
+      "date": "2026-12-19",
+      "title": "Persist retrieve, update and delete",
+      "objective": "Convert task detail, PATCH and DELETE endpoints to database operations; handle nonexistent IDs and commit changes.",
+      "deliverable": "All CRUD operations work against SQLite across app restarts.",
+      "resources": [
+        {
+          "name": "FastAPI SQL databases / SQLModel",
+          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+        },
+        {
+          "name": "FastAPI response status codes",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D24",
+      "week": 5,
+      "day_in_week": 1,
+      "date": "2026-12-21",
+      "title": "Database integrity and persistence checks",
+      "objective": "Test unique IDs and required fields; inspect SQLite file; test fresh DB creation and invalid input; document limitations.",
+      "deliverable": "Repeatable persistence check and database notes; no migration framework required yet.",
+      "resources": [
+        {
+          "name": "Python sqlite3",
+          "url": "https://docs.python.org/3/library/sqlite3.html"
+        },
+        {
+          "name": "FastAPI SQL databases / SQLModel",
+          "url": "https://fastapi.tiangolo.com/tutorial/sql-databases/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add one test for a task that remains available after recreating the app process.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D25",
+      "week": 5,
+      "day_in_week": 2,
+      "date": "2026-12-22",
+      "title": "Refactor into a small app structure",
+      "objective": "Separate main app, task routes, schemas, database and models; use APIRouter; keep layout small and readable.",
+      "deliverable": "A modular FastAPI app with the same behaviour as before refactor.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        },
+        {
+          "name": "FastAPI dependencies",
+          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D26",
+      "week": 5,
+      "day_in_week": 3,
+      "date": "2026-12-23",
+      "title": "Pydantic schemas and response models",
+      "objective": "Separate create, update and response schemas; prevent internal DB fields leaking accidentally; validate input lengths and required values.",
+      "deliverable": "Explicit input/output schemas and predictable response JSON.",
+      "resources": [
+        {
+          "name": "FastAPI request body",
+          "url": "https://fastapi.tiangolo.com/tutorial/body/"
+        },
+        {
+          "name": "FastAPI response models",
+          "url": "https://fastapi.tiangolo.com/tutorial/response-model/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D27",
+      "week": 5,
+      "day_in_week": 4,
+      "date": "2026-12-24",
+      "title": "pytest fundamentals",
+      "objective": "Install pytest; write tests for pure functions and schema validation; understand Arrange/Act/Assert and failure output.",
+      "deliverable": "At least five passing unit tests.",
+      "resources": [
+        {
+          "name": "pytest Getting Started",
+          "url": "https://pytest.org/en/stable/getting-started.html"
+        },
+        {
+          "name": "Python Tutorial",
+          "url": "https://docs.python.org/3/tutorial/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Intentionally break one assertion and diagnose pytest output.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D28",
+      "week": 5,
+      "day_in_week": 5,
+      "date": "2026-12-25",
+      "title": "FastAPI TestClient and endpoint tests",
+      "objective": "Use TestClient; create tests for create/list/detail/update/delete; isolate test database from development DB.",
+      "deliverable": "A repeatable API test suite that runs with one command.",
+      "resources": [
+        {
+          "name": "FastAPI testing",
+          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
+        },
+        {
+          "name": "pytest Getting Started",
+          "url": "https://pytest.org/en/stable/getting-started.html"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D29",
+      "week": 5,
+      "day_in_week": 6,
+      "date": "2026-12-26",
+      "title": "Error handling, dependencies and configuration",
+      "objective": "Use HTTPException for expected API errors; centralize reusable dependencies; read config from environment variables; never hardcode secrets.",
+      "deliverable": "Consistent 404/422 behaviours and documented local configuration example.",
+      "resources": [
+        {
+          "name": "FastAPI error handling",
+          "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+        },
+        {
+          "name": "FastAPI dependencies",
+          "url": "https://fastapi.tiangolo.com/tutorial/dependencies/"
+        },
+        {
+          "name": "FastAPI settings",
+          "url": "https://fastapi.tiangolo.com/advanced/settings/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Add a test confirming an unknown task returns 404 JSON.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D30",
+      "week": 6,
+      "day_in_week": 1,
+      "date": "2026-12-28",
+      "title": "Logging, health checks and API checkpoint",
+      "objective": "Add simple logs; implement /healthz and /readyz with distinct meanings; run all tests and update README.",
+      "deliverable": "Feature-complete beginner Task API with tests, documented endpoints and setup instructions.",
+      "resources": [
+        {
+          "name": "FastAPI First Steps",
+          "url": "https://fastapi.tiangolo.com/tutorial/first-steps/"
+        },
+        {
+          "name": "FastAPI testing",
+          "url": "https://fastapi.tiangolo.com/tutorial/testing/"
+        },
+        {
+          "name": "FastAPI settings",
+          "url": "https://fastapi.tiangolo.com/advanced/settings/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D31",
+      "week": 6,
+      "day_in_week": 2,
+      "date": "2026-12-29",
+      "title": "Containers from first principles",
+      "objective": "Use a browser Docker scenario, then run and inspect hello-world, Alpine and Nginx with Colima. Compare images, containers, processes and ports.",
+      "deliverable": "Docker command notebook, verified Colima context and explanation of image vs container.",
+      "resources": [
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Killercoda playlabs",
+          "url": "https://killercoda.com/playlabs"
+        },
+        {
+          "name": "Play with Docker Classroom",
+          "url": "https://training.play-with-docker.com/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Run a short browser Docker basics lab",
+        "Run, inspect, stop and remove a container locally with Colima",
+        "Save commands and a short comparison of remote vs local environment"
+      ]
+    },
+    {
+      "id": "D32",
+      "week": 6,
+      "day_in_week": 3,
+      "date": "2026-12-30",
+      "title": "Build the FastAPI Docker image",
+      "objective": "Use a browser build tutorial, then create and build a Dockerfile for the FastAPI app locally using an official Python image, dependency install and app startup command.",
+      "deliverable": "Locally built reliability-lab-api image and documented build command.",
+      "resources": [
+        {
+          "name": "Play with Docker Classroom",
+          "url": "https://training.play-with-docker.com/"
+        },
+        {
+          "name": "FastAPI Docker guide",
+          "url": "https://fastapi.tiangolo.com/deployment/docker/"
+        },
+        {
+          "name": "Docker build best practices",
+          "url": "https://docs.docker.com/build/building/best-practices/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Inspect image layers and explain why dependencies are copied before source code.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a short browser Docker build exercise",
+        "Build the Task API image locally",
+        "Explain Dockerfile base image, copy, install and startup instructions"
+      ]
+    },
+    {
+      "id": "D33",
+      "week": 6,
+      "day_in_week": 4,
+      "date": "2026-12-31",
+      "title": "Ports, processes and container debugging",
+      "objective": "Run the API with a published port; inspect logs, processes, environment and metadata. Deliberately use an incorrect port mapping and diagnose it.",
+      "deliverable": "API reachable from localhost and a port-mapping troubleshooting note.",
+      "resources": [
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Docker published ports",
+          "url": "https://docs.docker.com/engine/network/#published-ports"
+        },
+        {
+          "name": "FastAPI Docker guide",
+          "url": "https://fastapi.tiangolo.com/deployment/docker/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Practise container access in a browser scenario",
+        "Run the API with a local port mapping",
+        "Break and fix the mapping using ps, logs, inspect and curl"
+      ]
+    },
+    {
+      "id": "D34",
+      "week": 6,
+      "day_in_week": 5,
+      "date": "2027-01-01",
+      "title": "Filesystems, bind mounts and named volumes",
+      "objective": "Compare image files, writable layer, bind mounts and named volumes. Mount SQLite under /data and prove data survives container replacement.",
+      "deliverable": "Repeatable persistence test and filesystem/volume diagram.",
+      "resources": [
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Docker volumes",
+          "url": "https://docs.docker.com/engine/storage/volumes/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Draw what is stored in image, writable layer and named volume.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete browser volume exercise",
+        "Persist SQLite locally with a named volume",
+        "Replace the container and verify that data remains"
+      ]
+    },
+    {
+      "id": "D35",
+      "week": 6,
+      "day_in_week": 6,
+      "date": "2027-01-02",
+      "title": "Docker Compose and service discovery",
+      "objective": "Create compose.yaml with API build, ports, environment, named volume and health check. Add a second service and prove Compose service-name DNS works.",
+      "deliverable": "Repeatable Compose workflow, named network and successful service-to-service request.",
+      "resources": [
+        {
+          "name": "Play with Docker Classroom",
+          "url": "https://training.play-with-docker.com/"
+        },
+        {
+          "name": "Docker Compose Quickstart",
+          "url": "https://docs.docker.com/compose/gettingstarted/"
+        },
+        {
+          "name": "Docker networking",
+          "url": "https://docs.docker.com/engine/network/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser multi-service Compose exercise",
+        "Run the API and a second service locally",
+        "Verify service-name DNS and inspect the Compose network"
+      ]
+    },
+    {
+      "id": "D36",
+      "week": 7,
+      "day_in_week": 1,
+      "date": "2027-01-04",
+      "title": "Docker networking and image hygiene",
+      "objective": "Create/inspect a user-defined bridge; connect/disconnect containers; test name-based connectivity vs host-published ports. Add .dockerignore and non-root user where practical; diagnose four planted failures.",
+      "deliverable": "Docker troubleshooting page with at least four failure/evidence/fix examples and a network diagram.",
+      "resources": [
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Docker bridge networks",
+          "url": "https://docs.docker.com/engine/network/drivers/bridge/"
+        },
+        {
+          "name": "Docker build best practices",
+          "url": "https://docs.docker.com/build/building/best-practices/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Rebuild after a small source change and observe cache behaviour.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Practise a Docker networking browser lab",
+        "Create and inspect a local user-defined bridge network",
+        "Test container DNS and port publishing",
+        "Record four failure, evidence and fix examples"
+      ]
+    },
+    {
+      "id": "D37",
+      "week": 7,
+      "day_in_week": 2,
+      "date": "2027-01-05",
+      "title": "Kubernetes architecture and local k3d",
+      "objective": "Inspect a ready-made browser Kubernetes cluster and run kubectl. Verify Colima, install/check kubectl and k3d, create one local server cluster and inspect nodes.",
+      "deliverable": "Healthy single-server local cluster and architecture sketch comparing browser and local cluster.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Kubernetes Basics",
+          "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
+        },
+        {
+          "name": "k3d docs",
+          "url": "https://k3d.io/stable/"
+        },
+        {
+          "name": "Colima runtimes",
+          "url": "https://colima.run/docs/runtimes/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Inspect nodes and cluster context in Killercoda playground",
+        "Create the local single-server k3d cluster through Colima",
+        "Save cluster-info and node evidence"
+      ]
+    },
+    {
+      "id": "D38",
+      "week": 7,
+      "day_in_week": 3,
+      "date": "2027-01-06",
+      "title": "Containers, Pods and manifests",
+      "objective": "Complete a browser Pod/container exercise. Write a Pod manifest locally; apply, inspect, describe and delete it. Explain desired state, labels, image and container port.",
+      "deliverable": "Pod manifest and explanation of Pod vs container.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes Pods",
+          "url": "https://kubernetes.io/docs/concepts/workloads/pods/"
+        },
+        {
+          "name": "kubectl quick reference",
+          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete one browser Pod scenario",
+        "Apply and inspect a local Pod manifest",
+        "Delete it and explain each important manifest field"
+      ]
+    },
+    {
+      "id": "D39",
+      "week": 7,
+      "day_in_week": 4,
+      "date": "2027-01-07",
+      "title": "Deployments and ReplicaSets",
+      "objective": "Complete a browser Deployment exercise. Deploy the API locally, inspect its ReplicaSet and Pods, delete a Pod and observe reconciliation. Keep the SQLite API at one replica.",
+      "deliverable": "API Deployment and evidence that the controller recreates a deleted Pod.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes Deployments",
+          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Delete the pod and observe the Deployment recreate it.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser Deployment Basics scenario",
+        "Deploy the API locally",
+        "Delete one Pod and record controller reconciliation"
+      ]
+    },
+    {
+      "id": "D40",
+      "week": 7,
+      "day_in_week": 5,
+      "date": "2027-01-08",
+      "title": "Services, selectors and cluster access",
+      "objective": "Practise a Service scenario in the browser. Create a local ClusterIP Service, verify selectors/endpoints and use port-forward to call the API. Compare cluster DNS with port-forwarding.",
+      "deliverable": "Service manifest and successful request to the API in the cluster.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes Services",
+          "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
+        },
+        {
+          "name": "kubectl quick reference",
+          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser Service exercise",
+        "Create a local ClusterIP Service",
+        "Check selectors and endpoints and call the service via port-forward"
+      ]
+    },
+    {
+      "id": "D41",
+      "week": 7,
+      "day_in_week": 6,
+      "date": "2027-01-09",
+      "title": "Scaling, rolling updates and rollback",
+      "objective": "Scale stateless Nginx in browser and locally; perform rolling update and rollback after a bad image. Keep the SQLite API single-replica and explain why.",
+      "deliverable": "Scale, rollout and rollback evidence plus note on SQLite replica constraint.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes Deployments",
+          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Explain why stateless sample can scale while SQLite API stays single-replica.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Repeat a scaling/rollout scenario in Killercoda",
+        "Scale stateless Nginx locally",
+        "Perform a rolling update and rollback",
+        "Verify the SQLite API remains single-replica"
+      ]
+    },
+    {
+      "id": "D42",
+      "week": 8,
+      "day_in_week": 1,
+      "date": "2027-01-11",
+      "title": "ConfigMaps and Secrets",
+      "objective": "Practise configuration injection in browser. Move non-sensitive settings to a local ConfigMap and inject a disposable fake Secret; never use real credentials.",
+      "deliverable": "ConfigMap and Secret manifests, plus security notes.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes ConfigMaps",
+          "url": "https://kubernetes.io/docs/concepts/configuration/configmap/"
+        },
+        {
+          "name": "Kubernetes Secrets",
+          "url": "https://kubernetes.io/docs/concepts/configuration/secret/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser ConfigMap/Secret exercise",
+        "Inject ConfigMap and fake Secret values locally",
+        "Verify values without committing or printing sensitive data"
+      ]
+    },
+    {
+      "id": "D43",
+      "week": 8,
+      "day_in_week": 2,
+      "date": "2027-01-12",
+      "title": "Liveness, readiness and startup probes",
+      "objective": "Complete a browser probe exercise, then connect /healthz and /readyz to local Deployment probes. Cause a controlled failure and observe readiness removal vs restart behaviour.",
+      "deliverable": "Deployment with appropriate probes and evidence distinguishing liveness, readiness and startup checks.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes probes",
+          "url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Practise a browser probe scenario",
+        "Configure local startup/liveness/readiness probes",
+        "Cause and diagnose a controlled probe failure"
+      ]
+    },
+    {
+      "id": "D44",
+      "week": 8,
+      "day_in_week": 3,
+      "date": "2027-01-13",
+      "title": "CPU and memory requests/limits",
+      "objective": "Set modest requests and limits; inspect Pod description and usage; understand scheduling, throttling and OOMKilled. Use browser lab for repetition and keep local tests small.",
+      "deliverable": "Resource declarations and note explaining requests vs limits and OOM evidence.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Kubernetes resource management",
+          "url": "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Inspect a very low memory limit only if cluster remains stable; otherwise reason from manifest/events.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser resource limits exercise",
+        "Set conservative local requests and limits",
+        "Inspect events and explain OOMKilled evidence"
+      ]
+    },
+    {
+      "id": "D45",
+      "week": 8,
+      "day_in_week": 4,
+      "date": "2027-01-14",
+      "title": "Persistent storage in Kubernetes",
+      "objective": "Use browser cluster to inspect a PVC/PV. Create a local PVC if provisioner is practical; mount for single-replica SQLite API and verify persistence across Pod replacement.",
+      "deliverable": "PVC manifest and persistence evidence, or documented local-provisioner limitation.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Persistent volumes",
+          "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/"
+        },
+        {
+          "name": "Application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "debug",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Inspect a browser PV/PVC example",
+        "Attempt local PVC only if the provisioner works within the session",
+        "Verify persistence or document the limitation"
+      ]
+    },
+    {
+      "id": "D46",
+      "week": 8,
+      "day_in_week": 5,
+      "date": "2027-01-15",
+      "title": "RBAC and least privilege",
+      "objective": "Complete browser RBAC practice. Create local ServiceAccount, Role and RoleBinding; allow read/list Pods and prove delete is denied.",
+      "deliverable": "RBAC YAML and evidence of allowed and denied actions.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes RBAC",
+          "url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete a browser RBAC exercise",
+        "Create local ServiceAccount, Role and RoleBinding",
+        "Test one allowed and one denied kubectl action"
+      ]
+    },
+    {
+      "id": "D47",
+      "week": 8,
+      "day_in_week": 6,
+      "date": "2027-01-16",
+      "title": "Kubernetes troubleshooting drills",
+      "objective": "Diagnose ImagePullBackOff, CrashLoopBackOff, failed probe, wrong Service selector and Pending Pod. Use browser for one scenario and reproduce at least two failures locally.",
+      "deliverable": "Symptom/evidence/root-cause/fix/verification matrix with at least four cases.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        },
+        {
+          "name": "kubectl quick reference",
+          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Repeat one failure without looking at previous notes.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Diagnose one browser failure scenario",
+        "Reproduce at least two failure modes locally",
+        "Use describe, events, logs, previous logs and endpoints",
+        "Record at least four failure cases"
+      ]
+    },
+    {
+      "id": "D48",
+      "week": 9,
+      "day_in_week": 1,
+      "date": "2027-01-18",
+      "title": "Operations runbook and checkpoint",
+      "objective": "From clean state deploy, verify readiness, inspect logs/events, diagnose a planted failure, roll out and roll back. Compare browser cluster with local k3d and record single-node limitations.",
+      "deliverable": "One-page Kubernetes runbook and clean redeployment.",
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        },
+        {
+          "name": "Kubernetes Deployments",
+          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Complete one browser Kubernetes troubleshooting scenario",
+        "Perform clean local redeployment",
+        "Record deploy, verify, logs, events, rollout and rollback commands"
+      ]
+    },
+    {
+      "id": "D49",
+      "week": 9,
+      "day_in_week": 2,
+      "date": "2027-01-19",
+      "title": "Observability and the three signals",
+      "objective": "Understand metrics, logs and traces. Explore Grafana Play dashboards and trace investigation. Sketch how one Task API request creates all three signals.",
+      "deliverable": "Signal comparison and request-flow diagram.",
+      "resources": [
+        {
+          "name": "Grafana Play",
+          "url": "https://play.grafana.org/"
+        },
+        {
+          "name": "Grafana trace investigation",
+          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+        },
+        {
+          "name": "OpenTelemetry observability primer",
+          "url": "https://opentelemetry.io/docs/concepts/observability-primer/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Explore public Grafana dashboards",
+        "Follow the trace investigation walkthrough",
+        "Map one Task API request to metric, structured log and trace"
+      ]
+    },
+    {
+      "id": "D50",
+      "week": 9,
+      "day_in_week": 3,
+      "date": "2027-01-20",
+      "title": "Instrument FastAPI with Prometheus metrics",
+      "objective": "Add a Prometheus request Counter and duration Histogram; use bounded method, route-template and status labels; expose /metrics and inspect values. Avoid unbounded labels.",
+      "deliverable": "Working /metrics endpoint and explanation of metric types/labels.",
+      "resources": [
+        {
+          "name": "Prometheus Python client",
+          "url": "https://prometheus.github.io/client_python/"
+        },
+        {
+          "name": "Prometheus data model",
+          "url": "https://prometheus.io/docs/concepts/data_model/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Review Prometheus metric types/data model",
+        "Instrument FastAPI with Counter and Histogram",
+        "Generate requests and inspect /metrics",
+        "Explain bounded-label choices"
+      ]
+    },
+    {
+      "id": "D51",
+      "week": 9,
+      "day_in_week": 4,
+      "date": "2027-01-21",
+      "title": "Prometheus scraping and PromQL",
+      "objective": "Configure Prometheus to scrape the API; verify target health and troubleshoot host/port/path. Write PromQL for request rate, 5xx ratio, latency histogram quantiles and target health.",
+      "deliverable": "Target shows API UP and promql.md contains at least five tested queries.",
+      "resources": [
+        {
+          "name": "Prometheus Getting Started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
+        },
+        {
+          "name": "PromQL basics",
+          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Stop API briefly and observe target state change.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Configure and verify API scrape target",
+        "Write and test at least five PromQL queries",
+        "Compare instant and range queries"
+      ]
+    },
+    {
+      "id": "D52",
+      "week": 9,
+      "day_in_week": 5,
+      "date": "2027-01-22",
+      "title": "Structured application logs with Loki and Alloy",
+      "objective": "Emit structured logs to stdout with timestamp, severity, service name and request context. Explore Loki browser quickstart; run Loki + Alloy + Grafana Compose stack locally if memory allows; query ERROR logs with LogQL.",
+      "deliverable": "API logs visible in Loki/Grafana, two LogQL queries and explanation of Alloy/Loki.",
+      "resources": [
+        {
+          "name": "Loki tutorial and interactive quickstart",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        },
+        {
+          "name": "Loki fundamentals GitHub repository",
+          "url": "https://github.com/grafana/loki-fundamentals"
+        },
+        {
+          "name": "LogQL",
+          "url": "https://grafana.com/docs/loki/latest/query/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Explore the Loki interactive quickstart",
+        "Clone grafana/loki-fundamentals at getting-started branch",
+        "Run only the Loki/Alloy/Grafana stack locally",
+        "Generate API logs and query them with LogQL",
+        "Stop the stack after the exercise"
+      ]
+    },
+    {
+      "id": "D53",
+      "week": 9,
+      "day_in_week": 6,
+      "date": "2027-01-23",
+      "title": "Distributed tracing with OpenTelemetry and Jaeger",
+      "objective": "Learn traces, spans, parent/child relationships, trace IDs and context propagation. Instrument FastAPI with OpenTelemetry; export OTLP to Jaeger all-in-one and inspect one request. Keep scope to one service.",
+      "deliverable": "A request trace visible in Jaeger and notes identifying trace ID, spans, duration and service.",
+      "resources": [
+        {
+          "name": "OpenTelemetry Python instrumentation",
+          "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
+        },
+        {
+          "name": "Jaeger Getting Started",
+          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
+        },
+        {
+          "name": "OpenTelemetry Demo repository",
+          "url": "https://github.com/open-telemetry/opentelemetry-demo"
+        },
+        {
+          "name": "OpenTelemetry FastAPI instrumentation",
+          "url": "https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Read OpenTelemetry Python instrumentation basics",
+        "Run one Jaeger container locally",
+        "Instrument FastAPI and export an OTLP trace",
+        "Inspect one request in Jaeger",
+        "Inspect OpenTelemetry Demo architecture only; do not run full stack"
+      ]
+    },
+    {
+      "id": "D54",
+      "week": 10,
+      "day_in_week": 1,
+      "date": "2027-01-25",
+      "title": "Prometheus rules and incident drill 1: target unavailable",
+      "objective": "Create one recording rule and alerts for elevated errors and target absence. Stop the API or make its scrape target unavailable; observe detection, restore and verify recovery.",
+      "deliverable": "rules.yml with one recording rule and two alerts; incidents/incident-01-target-unavailable.md.",
+      "resources": [
+        {
+          "name": "Prometheus recording rules",
+          "url": "https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/"
+        },
+        {
+          "name": "Prometheus alerting rules",
+          "url": "https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Write one runbook instruction for each alert.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create and validate Prometheus rules",
+        "Make the target unavailable in the local lab",
+        "Capture alert/target evidence and timeline",
+        "Restore service and verify recovery",
+        "Write incident report 1: cause, mitigation, verification and prevention"
+      ]
+    },
+    {
+      "id": "D55",
+      "week": 10,
+      "day_in_week": 2,
+      "date": "2027-01-26",
+      "title": "Grafana data sources and exploration",
+      "objective": "Connect Grafana to Prometheus; add Loki and Jaeger data sources when those backends are running. Validate each separately; do not run every backend at once.",
+      "deliverable": "Grafana data-source notes and query evidence for all three signals across separate lab runs.",
+      "resources": [
+        {
+          "name": "Grafana with Prometheus",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/get-started-grafana-prometheus/"
+        },
+        {
+          "name": "Grafana Play",
+          "url": "https://play.grafana.org/"
+        },
+        {
+          "name": "Grafana data sources",
+          "url": "https://grafana.com/docs/grafana/latest/datasources/"
+        },
+        {
+          "name": "Grafana Jaeger data source",
+          "url": "https://grafana.com/docs/grafana/latest/datasources/jaeger/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Connect and query Prometheus",
+        "Start Loki stack separately and configure/query Loki source",
+        "Start Jaeger separately and configure/query trace source",
+        "Record datasource URLs and verified query"
+      ]
+    },
+    {
+      "id": "D56",
+      "week": 10,
+      "day_in_week": 3,
+      "date": "2027-01-27",
+      "title": "Build a service dashboard and correlate signals",
+      "objective": "Build dashboard panels for request rate, 5xx rate, latency and target availability. Add log exploration and practise moving from incident time window to related logs/traces; add an annotation.",
+      "deliverable": "Exported dashboard JSON and short investigation guide.",
+      "resources": [
+        {
+          "name": "Grafana dashboard tutorial",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
+        },
+        {
+          "name": "Grafana trace investigation",
+          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+        },
+        {
+          "name": "Grafana Play",
+          "url": "https://play.grafana.org/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Explain what each panel tells an on-call engineer and what it cannot tell them.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Build four useful service panels",
+        "Explore logs and traces for the same test window",
+        "Add an incident annotation",
+        "Explain what each panel can and cannot tell on-call"
+      ]
+    },
+    {
+      "id": "D57",
+      "week": 10,
+      "day_in_week": 4,
+      "date": "2027-01-28",
+      "title": "Grafana alerting and incident drill 2: elevated HTTP 5xx",
+      "objective": "Create an alert for elevated 5xx or missing target. Test pending/firing/recovery/no-data. Introduce a temporary local-only 5xx fault, investigate through alert/dashboard/logs/traces, restore normal behaviour and remove the fault.",
+      "deliverable": "Grafana alert, alert runbook and incidents/incident-02-http-5xx.md.",
+      "resources": [
+        {
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
+        },
+        {
+          "name": "Grafana trace investigation",
+          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+        },
+        {
+          "name": "Loki tutorial",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Create and test Grafana alert states",
+        "Introduce a controlled local-only 5xx failure",
+        "Investigate using dashboard, logs and trace",
+        "Restore app and verify recovery",
+        "Write incident report 2"
+      ]
+    },
+    {
+      "id": "D58",
+      "week": 10,
+      "day_in_week": 5,
+      "date": "2027-01-29",
+      "title": "SLIs, SLOs and error budgets",
+      "objective": "Define availability and latency indicators; choose learning-only objectives and calculate error budget for a stated window. Explain why small lab data is not production evidence.",
+      "deliverable": "slo.md with definitions, objective, window, query, error budget and limitations.",
+      "resources": [
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        },
+        {
+          "name": "PromQL basics",
+          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Explain how an error budget changes the conversation about reliability work.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Define availability and latency SLIs",
+        "Set illustrative learning SLOs",
+        "Calculate error budget for a stated period",
+        "Document measurement limitations"
+      ]
+    },
+    {
+      "id": "D59",
+      "week": 10,
+      "day_in_week": 6,
+      "date": "2027-01-30",
+      "title": "Incident drill 3: elevated latency and signal correlation",
+      "objective": "Introduce temporary local-only API latency. Detect it in dashboard/histogram, find slow request in Jaeger and use logs for context. Restore and verify normal latency.",
+      "deliverable": "incidents/incident-03-high-latency.md with metric/log/trace evidence; all three incident reports complete.",
+      "resources": [
+        {
+          "name": "Grafana trace investigation",
+          "url": "https://grafana.com/docs/grafana/latest/visualizations/simplified-exploration/traces/get-started/example-investigation/"
+        },
+        {
+          "name": "OpenTelemetry Python instrumentation",
+          "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
+        },
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Introduce temporary local-only latency delay",
+        "Detect the change with histogram/dashboard",
+        "Inspect related trace and logs",
+        "Restore normal behaviour and verify",
+        "Write incident report 3 and cross-check all three reports"
+      ]
+    },
+    {
+      "id": "D60",
+      "week": 11,
+      "day_in_week": 1,
+      "date": "2027-02-01",
+      "title": "Core project checkpoint and gap assessment",
+      "objective": "Run a guided end-to-end checkpoint of the Task API, Docker/Compose, Kubernetes and observability work completed so far. Record weak areas to practise independently in Weeks 11–12; this is a checkpoint, not the final presentation.",
+      "deliverable": "A project gap register, verified clean application state and a short list of tasks to repeat without step-by-step instructions.",
+      "resources": [
+        {
+          "name": "Docker Classroom",
+          "url": "https://training.play-with-docker.com/"
+        },
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Prometheus Getting Started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
+        },
+        {
+          "name": "Loki tutorial",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        },
+        {
+          "name": "Jaeger Getting Started",
+          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
+        },
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        }
+      ],
+      "duration_minutes": 60,
+      "extension_minutes": 15,
+      "extension_task": "Write an honest skills summary: what you can do independently and what still needs production experience.",
+      "status": "not_started",
+      "completed_at": null,
+      "notes": "",
+      "tasks": [
+        "Start the API and verify CRUD, tests and health endpoints",
+        "Build and run the container and Compose stack",
+        "Check Kubernetes manifests, deployment, service, probes and rollback",
+        "Verify Prometheus metrics, Loki logs and Jaeger traces using separate stack runs as needed",
+        "Write a gap register: independent, needs notes, needs guidance"
+      ]
+    },
+    {
+      "id": "D61",
+      "title": "Independent Docker rebuild from a clean state",
+      "objective": "Rebuild the API image and Compose stack from the project README without following the original daily instructions. Diagnose one deliberately introduced Dockerfile/build issue and one port or environment issue.",
+      "deliverable": "A clean reproducible Docker build/Compose run and a short independent troubleshooting record.",
+      "tasks": [
+        "Start from the committed project state and follow only its README",
+        "Build the image and start the API with Compose",
+        "Introduce and diagnose one build/startup failure",
+        "Verify /docs, /healthz and persistent data",
+        "Update README commands if they were incomplete"
+      ],
+      "resources": [
+        {
+          "name": "Docker Learn",
+          "url": "https://docs.docker.com/learn/paths/get-started-with-docker-containers/"
+        },
+        {
+          "name": "Killercoda Docker scenarios",
+          "url": "https://killercoda.com/docker"
+        },
+        {
+          "name": "Docker build best practices",
+          "url": "https://docs.docker.com/build/building/best-practices/"
+        }
+      ],
+      "week": 11,
+      "day_in_week": 2,
+      "date": "2027-02-02",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D62",
+      "title": "Docker networking and persistence break/fix lab",
+      "objective": "Independently troubleshoot Compose service discovery, published ports and named-volume persistence. Distinguish a container DNS/network issue from a host port issue and a lost-data issue.",
+      "deliverable": "Three short failure/evidence/fix records covering DNS/networking, port publishing and volume persistence.",
+      "tasks": [
+        "Create or inspect the Compose network",
+        "Break service-name resolution or network membership and diagnose it",
+        "Break a published port mapping and diagnose it",
+        "Verify database data survives container replacement",
+        "Record the evidence and exact fix for all three failures"
+      ],
+      "resources": [
+        {
+          "name": "Docker networking overview",
+          "url": "https://docs.docker.com/engine/network/"
+        },
+        {
+          "name": "Docker bridge networks",
+          "url": "https://docs.docker.com/engine/network/drivers/bridge/"
+        },
+        {
+          "name": "Docker volumes",
+          "url": "https://docs.docker.com/engine/storage/volumes/"
+        }
+      ],
+      "week": 11,
+      "day_in_week": 3,
+      "date": "2027-02-03",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D63",
+      "title": "Kubernetes deployment from a clean state",
+      "objective": "Use the local k3d cluster and project manifests to deploy the API from a clean namespace. Verify Deployment, ReplicaSet, Pod, Service, endpoints and readiness without copying a tutorial.",
+      "deliverable": "Clean deployment evidence and an updated Kubernetes runbook with the deployment sequence.",
+      "tasks": [
+        "Use a browser Kubernetes scenario for a short warm-up if useful",
+        "Create or select the learning namespace",
+        "Apply manifests in a deliberate order",
+        "Verify Pod, Deployment, Service, endpoints and readiness",
+        "Save the exact commands and verification output"
+      ],
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes playground",
+          "url": "https://killercoda.com/playgrounds/scenario/kubernetes"
+        },
+        {
+          "name": "Kubernetes Deployments",
+          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        },
+        {
+          "name": "Kubernetes Services",
+          "url": "https://kubernetes.io/docs/concepts/services-networking/service/"
+        }
+      ],
+      "week": 11,
+      "day_in_week": 4,
+      "date": "2027-02-04",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D64",
+      "title": "Kubernetes failure injection and evidence-led diagnosis",
+      "objective": "Independently plant and diagnose selected failures such as a bad image, wrong Service selector or failed readiness probe. Use events, describe, logs and endpoint state to establish the cause before changing anything.",
+      "deliverable": "Three failure records with symptom, command/output evidence, root cause, fix and verification.",
+      "tasks": [
+        "Introduce one bad image in a disposable Deployment and diagnose it",
+        "Introduce a wrong selector or port and diagnose missing endpoints",
+        "Cause a readiness failure and explain its effect",
+        "Use describe, events, logs and endpoint inspection",
+        "Restore the manifests to a healthy state"
+      ],
+      "resources": [
+        {
+          "name": "Killercoda Kubernetes scenarios",
+          "url": "https://killercoda.com/kubernetes"
+        },
+        {
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        },
+        {
+          "name": "kubectl quick reference",
+          "url": "https://kubernetes.io/docs/reference/kubectl/quick-reference/"
+        }
+      ],
+      "week": 11,
+      "day_in_week": 5,
+      "date": "2027-02-05",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D65",
+      "title": "Kubernetes operations runbook challenge",
+      "objective": "Perform an operational sequence from memory: inspect cluster health, verify workloads, check probes/resources, perform rollout/rollback and prove RBAC permissions. Review storage limitations for the single-replica SQLite API.",
+      "deliverable": "An independently usable Kubernetes runbook with deploy, inspect, troubleshoot, rollout, rollback and RBAC verification steps.",
+      "tasks": [
+        "Check cluster and namespace state",
+        "Verify Deployment, probes, resource requests/limits and Service endpoints",
+        "Perform a rolling update and rollback",
+        "Test one permitted and one denied RBAC action",
+        "Document SQLite single-replica and local storage constraints"
+      ],
+      "resources": [
+        {
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        },
+        {
+          "name": "Kubernetes RBAC",
+          "url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+        },
+        {
+          "name": "Kubernetes Deployments",
+          "url": "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/"
+        }
+      ],
+      "week": 11,
+      "day_in_week": 6,
+      "date": "2027-02-06",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D66",
+      "title": "Prometheus and PromQL independent investigation",
+      "objective": "Work from a small set of service metrics to answer operational questions without following the original PromQL examples. Check request rate, errors, latency and target health; review labels for cardinality risks.",
+      "deliverable": "An observability exercise sheet with at least six tested PromQL queries and explanations.",
+      "tasks": [
+        "Verify the API target is being scraped",
+        "Query request rate and total volume",
+        "Query 5xx rate and error percentage",
+        "Query histogram-based latency",
+        "Check target health and missing data",
+        "Inspect metric labels and identify high-cardinality risks"
+      ],
+      "resources": [
+        {
+          "name": "Prometheus Getting Started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
+        },
+        {
+          "name": "PromQL basics",
+          "url": "https://prometheus.io/docs/prometheus/latest/querying/basics/"
+        },
+        {
+          "name": "Prometheus data model",
+          "url": "https://prometheus.io/docs/concepts/data_model/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 1,
+      "date": "2027-02-08",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D67",
+      "title": "Loki and LogQL independent log investigation",
+      "objective": "Start the lightweight Loki/Alloy/Grafana stack separately. Generate normal and error API requests, find relevant structured log entries, and explain the difference between log content and indexed labels.",
+      "deliverable": "A small LogQL investigation sheet with queries for service, severity and selected request/trace context; no high-cardinality index labels.",
+      "tasks": [
+        "Start only the Loki/Alloy/Grafana learning stack",
+        "Generate successful and failing API requests",
+        "Find matching entries with LogQL",
+        "Inspect structured fields and trace_id/span_id content where available",
+        "Stop the stack and record the commands"
+      ],
+      "resources": [
+        {
+          "name": "Loki tutorial and interactive quickstart",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        },
+        {
+          "name": "Loki fundamentals GitHub repository",
+          "url": "https://github.com/grafana/loki-fundamentals"
+        },
+        {
+          "name": "LogQL",
+          "url": "https://grafana.com/docs/loki/latest/query/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 2,
+      "date": "2027-02-09",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D68",
+      "title": "OpenTelemetry and Jaeger independent trace investigation",
+      "objective": "Run the API with OpenTelemetry instrumentation, generate requests and use Jaeger to inspect trace IDs, spans, parent/child relationships and duration. Relate trace IDs to application log context where configured.",
+      "deliverable": "Two annotated trace examples: one normal request and one slower/failing request, with a short explanation of spans and trace context.",
+      "tasks": [
+        "Start only Jaeger and the instrumented API",
+        "Generate a normal request and inspect its trace",
+        "Generate a second request with a controlled delay or error",
+        "Compare spans, duration and trace context",
+        "Check whether trace_id/span_id can be found in corresponding logs"
+      ],
+      "resources": [
+        {
+          "name": "OpenTelemetry Python instrumentation",
+          "url": "https://opentelemetry.io/docs/languages/python/instrumentation/"
+        },
+        {
+          "name": "OpenTelemetry FastAPI instrumentation",
+          "url": "https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi"
+        },
+        {
+          "name": "Jaeger Getting Started",
+          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
+        },
+        {
+          "name": "Grafana Jaeger data source",
+          "url": "https://grafana.com/docs/grafana/latest/datasources/jaeger/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 3,
+      "date": "2027-02-10",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D69",
+      "title": "Grafana dashboard, alert and SLO quality review",
+      "objective": "Review whether the dashboard and alerts help an on-call engineer decide what to do. Improve labels/units/thresholds, check pending/firing/recovery/no-data behaviour, and explain the learning SLO and its error budget.",
+      "deliverable": "Reviewed dashboard JSON, tested alert/runbook and an SLO note with explicit lab limitations.",
+      "tasks": [
+        "Review request, error, latency and availability panels",
+        "Check legends, units, labels and dashboard readability",
+        "Trigger and recover one alert; inspect no-data behaviour",
+        "Review the SLI/SLO calculation and measurement window",
+        "Write one concrete on-call action for each alert"
+      ],
+      "resources": [
+        {
+          "name": "Grafana dashboard tutorial",
+          "url": "https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/"
+        },
+        {
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
+        },
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 4,
+      "date": "2027-02-11",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D70",
+      "title": "Independent end-to-end incident response drill",
+      "objective": "Choose one controlled local-only failure scenario and investigate it without a step-by-step guide. Use available metric, log, trace and Kubernetes evidence; recover the service and verify the result.",
+      "deliverable": "A fourth incident exercise or tabletop report showing detection, timeline, evidence, diagnosis, mitigation, recovery and prevention.",
+      "tasks": [
+        "Select one local-only fault: unavailable target, HTTP 5xx, latency, bad rollout or failing probe",
+        "Detect the issue and identify its user/service impact",
+        "Collect relevant metrics, logs, traces and Kubernetes evidence where applicable",
+        "Mitigate, restore and verify service health",
+        "Write the incident timeline and follow-up actions"
+      ],
+      "resources": [
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        },
+        {
+          "name": "Kubernetes application debugging",
+          "url": "https://kubernetes.io/docs/tasks/debug/debug-application/"
+        },
+        {
+          "name": "Grafana Alerting",
+          "url": "https://grafana.com/docs/grafana/latest/alerting/fundamentals/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 5,
+      "date": "2027-02-12",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "id": "D71",
+      "title": "Final independent capstone and portfolio review",
+      "objective": "Starting from a clean state, demonstrate the Task API, container build/Compose networking, Kubernetes operation and the three observability signals. Explain design choices and limits as if presenting to an SRE/platform engineering interviewer.",
+      "deliverable": "Reproducible project README, clean manifests/configuration, dashboard and alert exports, incident reports and a five-minute capstone walkthrough.",
+      "tasks": [
+        "Start from documented clean-state instructions",
+        "Demonstrate API CRUD, validation, tests and persistence",
+        "Demonstrate Docker build, Compose, volume and network behaviour",
+        "Demonstrate Kubernetes deployment, troubleshooting, rollout and rollback",
+        "Demonstrate Prometheus metrics, Loki logs, OpenTelemetry traces and Grafana",
+        "Present three required incident reports plus the additional drill/tabletop",
+        "Write an honest self-assessment of independent skills and production gaps"
+      ],
+      "resources": [
+        {
+          "name": "Docker Learn",
+          "url": "https://docs.docker.com/learn/paths/get-started-with-docker-containers/"
+        },
+        {
+          "name": "Kubernetes Basics",
+          "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/"
+        },
+        {
+          "name": "Prometheus Getting Started",
+          "url": "https://prometheus.io/docs/prometheus/latest/getting_started/"
+        },
+        {
+          "name": "Loki tutorial",
+          "url": "https://grafana.com/docs/loki/latest/get-started/quick-start/tutorial/"
+        },
+        {
+          "name": "Jaeger Getting Started",
+          "url": "https://www.jaegertracing.io/docs/latest/getting-started/"
+        },
+        {
+          "name": "Google SRE Workbook",
+          "url": "https://sre.google/workbook/table-of-contents/"
+        }
+      ],
+      "week": 12,
+      "day_in_week": 6,
+      "date": "2027-02-13",
+      "duration_minutes": 60,
+      "extension_minutes": 0,
+      "extension_task": null,
+      "status": "not_started",
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "weekly_reviews": [
+    {
+      "week": 1,
+      "date": "2026-11-29",
+      "title": "Week 1 review — HTTP foundations and first API setup",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Set up the project and explain request/response anatomy, URLs, methods and status codes.",
+      "checks": [
+        "Link or identify the deliverable that works; do not count reading alone.",
+        "Can I explain request/response lifecycle, URL structure, methods and status code groups?",
+        "What did I get running locally and what evidence proves it?",
+        "Which concept still feels unfamiliar? Write one precise question.",
+        "Did I stay close to the 60-minute target?",
+        "Explain one concept aloud in 2–3 minutes without notes."
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 2,
+      "date": "2026-12-06",
+      "title": "Week 2 review — REST contract and FastAPI fundamentals",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Complete the API contract and create routes using path/query parameters and Pydantic models.",
+      "checks": [
+        "Link api-contract.md and the working FastAPI routes/docs.",
+        "Can I explain each resource, route, path/query parameter and request model?",
+        "Can I use /docs and inspect /openapi.json?",
+        "What did I build without copying the complete example?",
+        "Which validation behaviour remains unclear?",
+        "Did I preserve the Sunday rest/review?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 3,
+      "date": "2026-12-13",
+      "title": "Week 3 review — Build the Task API: CRUD",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Implement create/list/retrieve/update/delete and consistent validation/error behaviour.",
+      "checks": [
+        "Link the working CRUD endpoints and manual test evidence.",
+        "Can I create, list, retrieve, update and delete tasks without a tutorial?",
+        "Are missing IDs and invalid input handled predictably?",
+        "What does each endpoint return and with which status code?",
+        "What failed and how did I prove the fix?",
+        "What should be repeated before persistence?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 4,
+      "date": "2026-12-20",
+      "title": "Week 4 review — Persist API data with SQLite",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Use SQLModel, sessions and dependencies so data survives restarts.",
+      "checks": [
+        "Link models, database/session code and persistence evidence.",
+        "Can I explain engine, model, session, dependency and commit?",
+        "Does data survive an application restart?",
+        "Did I test integrity/duplicate or invalid records?",
+        "What database concept needs another pass?",
+        "What can I now perform independently?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 5,
+      "date": "2026-12-27",
+      "title": "Week 5 review — Test and harden the API",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Refactor, write tests, configure errors/logging/health and verify the service.",
+      "checks": [
+        "Link tests, config, logging and health endpoint evidence.",
+        "Can I run tests and interpret failures?",
+        "Do tests use an isolated test database?",
+        "Are errors and health/readiness behaviour clear?",
+        "What did I refactor and why?",
+        "Is the API ready to containerise?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 6,
+      "date": "2027-01-03",
+      "title": "Week 6 review — API checkpoint and Docker foundations",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Checkpoint the API and build/run the first container, inspect it and persist data.",
+      "checks": [
+        "Link Dockerfile, image, Compose file and volume test.",
+        "Can I build/run/inspect the image?",
+        "Can I explain writable layer vs named volume?",
+        "Does the API work through a published port?",
+        "Did I verify Colima and Compose work without Docker Desktop?",
+        "What will I practise next week?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 7,
+      "date": "2027-01-10",
+      "title": "Week 7 review — Docker networking and Kubernetes fundamentals",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Complete Compose networking and deploy Kubernetes workloads, Services and rollouts.",
+      "checks": [
+        "Link Compose network and Kubernetes manifests.",
+        "Can containers communicate by service name?",
+        "Can I explain Pod, Deployment, ReplicaSet and Service?",
+        "Can I verify selectors/endpoints and perform a rollout/rollback?",
+        "Why does the SQLite API stay at one replica?",
+        "What differed between browser and local labs?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 8,
+      "date": "2027-01-17",
+      "title": "Week 8 review — Kubernetes operations and troubleshooting",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Operate probes, resources, storage, RBAC and diagnose failure states.",
+      "checks": [
+        "Link the Kubernetes runbook and failure matrix.",
+        "Can I distinguish liveness, readiness and startup probes?",
+        "Can I explain requests, limits and OOMKilled evidence?",
+        "Can I prove one allowed and one denied RBAC action?",
+        "Which failures did I diagnose and what evidence proved each cause?",
+        "What needs repeating independently?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 9,
+      "date": "2027-01-24",
+      "title": "Week 9 review — Kubernetes checkpoint and observability foundations",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Run the cluster runbook and learn metrics, logs and traces.",
+      "checks": [
+        "Link /metrics, promql.md, LogQL queries, trace evidence and cluster runbook.",
+        "Can I explain what metrics, logs and traces each tell me?",
+        "Can I query request rate, 5xx ratio and latency in PromQL?",
+        "Can I find application errors in Loki with LogQL?",
+        "Can I inspect a request trace and explain its spans?",
+        "What is still guided rather than independent?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 10,
+      "date": "2027-01-31",
+      "title": "Week 10 review — Metrics, logs, traces, alerting and incident response",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Query metrics/logs/traces, build rules/dashboard/alerts, and complete the three required incident drills: target unavailable, elevated HTTP 5xx and elevated latency.",
+      "checks": [
+        "Link dashboard JSON, alert runbook, SLO note and incident report 1.",
+        "Can I use Grafana to assess request rate, errors, latency and availability?",
+        "Can I move from an alert/time window to related logs and traces?",
+        "Incident 1: target unavailable — report complete?",
+        "Incident 2: elevated HTTP 5xx — report complete?",
+        "Incident 3: elevated latency — report complete?",
+        "Are faults local-only and has normal service state been restored?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 11,
+      "date": "2027-02-07",
+      "title": "Week 11 review — Independent container and Kubernetes labs",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Repeat Docker and Kubernetes work from a clean state; break/fix and document evidence.",
+      "checks": [
+        "Link clean-state Docker/Kubernetes runbooks and failure records.",
+        "Can I rebuild and redeploy from documentation alone?",
+        "Can I diagnose container network/volume problems independently?",
+        "Can I deploy a workload and diagnose a planted Kubernetes failure?",
+        "Can I roll back and prove RBAC permissions?",
+        "What still requires step-by-step guidance?",
+        "Which exercise should receive one more repetition?"
+      ],
+      "completed_at": null,
+      "notes": ""
+    },
+    {
+      "week": 12,
+      "date": "2027-02-14",
+      "title": "Week 12 review — Independent observability and final capstone",
+      "duration_minutes": 20,
+      "status": "pending",
+      "expected_outcome": "Investigate metrics/logs/traces, improve alert quality, run an independent incident and present the project.",
+      "checks": [
+        "Link updated README, dashboards, alert, all incident reports and capstone notes.",
+        "Can I investigate metrics, logs and traces without a step-by-step guide?",
+        "Can I explain alert/SLO choices and their limitations?",
+        "Is the final demo reproducible from a clean state?",
+        "Can I explain platform/SRE trade-offs clearly?",
+        "What can I do independently and what still needs production experience?",
+        "Choose the next learning priority based on evidence."
+      ],
+      "completed_at": null,
+      "notes": ""
+    }
+  ],
+  "last_updated": "2026-11-24",
+  "migration_note": "Revised on 2026-11-23 after learner clarified that Python fundamentals are not needed. Week 1 now covers HTTP/API foundations; Week 2 starts FastAPI directly. No previously completed sessions existed; all 60 sessions remain not_started. Further updated the Week 6–10 lab overlay on 2026-11-23 to add free browser labs paired with local Colima/k3d work, Docker networking, Loki/Alloy logs, OpenTelemetry/Jaeger traces and three explicit incident drills. Existing progress statuses and notes were preserved. Rebased on 2026-11-23 for a Tuesday 2026-11-24 start. Sundays remain review/rest days. Week 1 is a five-session kickoff; Weeks 2–12 each contain six sessions. Added 11 consolidation sessions D61–D71. Existing session statuses were preserved as not_started; finish moved to 2027-02-13 and final review to 2027-02-14.",
+  "lab_method": "For D31-D71, use a short free browser lab when available (about 10–15 minutes inside the guided-practice block), then reproduce the concept locally and save evidence in this repository. Keep each study session to 60 minutes. Browser environments are disposable; the local project is the source of truth.",
+  "browser_lab_safety": "Do not enter production credentials, tokens or personal data into public labs. Killercoda free scenarios are time-limited and ephemeral. Public demo datasets can reset.",
+  "observability_signals": [
+    "metrics: Prometheus",
+    "logs: structured stdout, Grafana Alloy and Loki",
+    "traces: OpenTelemetry and Jaeger"
+  ]
+}
