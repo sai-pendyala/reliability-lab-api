@@ -1,6 +1,6 @@
 # Project Specification — Ledger API Reliability Lab
 
-*Revised 25 November 2026. Companion files: `learning-plan.md`, `progress.json`, `resource-review.md`.*
+*Revised 25 November 2026. Companion files: `learning/plan.md`, `learning/progress.json`, `learning/resource-review.md`.*
 
 ## 1. Purpose
 
