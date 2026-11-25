@@ -958,6 +958,8 @@ Resources: [LeetCode problem set](https://leetcode.com/problemset/) · [NeetCode
 - [ ] Build panels for rate, errors, latency, availability and budget use
 - [ ] Provision the dashboard from a JSON file
 - [ ] Set clear titles, units and legends
+- [ ] Write what each panel can and cannot tell on-call
+
 **Resources:** [Grafana: first dashboards](https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/) · [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/) · [PromQL basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)
 
 **Optional +15 min:** Add an annotation that marks when you start a test.
