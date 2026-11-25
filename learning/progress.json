@@ -46,8 +46,8 @@
     "weekly_reviews": 12,
     "review_minutes": 240
   },
-  "completed_sessions": 1,
-  "completion_percent": 1.4,
+  "completed_sessions": 2,
+  "completion_percent": 2.8,
   "days": [
     {
       "id": "D1",
@@ -116,9 +116,9 @@
       "duration_minutes": 60,
       "extension_minutes": 0,
       "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": "",
+      "status": "completed",
+      "completed_at": "2026-11-25",
+      "notes": "Completed and verified interactively. Reviewed HTTP client/server request-response flow; identified request lines, URL components, headers, blank-line separation, optional bodies, response status line, response headers and JSON body. Inspected the local FastAPI GET / exchange with curl -v: request GET / HTTP/1.1, Host 127.0.0.1:8000, User-Agent curl/8.7.1, Accept */*, response HTTP/1.1 200 OK, server uvicorn, content-type application/json, and JSON body {\"message\":\"Hello, World!\"}. Distinguished path parameters, query parameters, HTTP headers and JSON request bodies using Ledger API examples. Initialized local Git repository, retained local .gitignore and main.py, synchronized the pre-existing GitHub history, excluded .venv and __pycache__, added basic .env/key and macOS ignore rules, configured existing Ed25519 SSH key and GitHub SSH authentication, switched origin to SSH, and successfully pushed main. Remote main advanced to merge commit c73164a; upstream tracking set to origin/main.",
       "tasks": [
         "Label request line, URL components, headers, body and response fields on a sample exchange",
         "Use curl -v against the local D1 app and read the request and response headers",
