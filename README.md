@@ -43,6 +43,8 @@ Development is on an Apple Silicon Mac with 8 GB RAM using Colima (not Docker De
 ```text
 .
 ├── .gitignore
+├── main.py               # Day 1 FastAPI starter
+├── requirements.txt      # Direct application dependency
 ├── learning/
 │   ├── plan.md
 │   ├── project-spec.md
@@ -55,4 +57,4 @@ Development is on an Apple Silicon Mac with 8 GB RAM using Colima (not Docker De
 └── .github/workflows/    # CI from D22
 ```
 
-The application directories will appear as the corresponding sessions build them. Do not create empty placeholders just to match the diagram.
+The Day 1 starter app is at the repository root. The structured `app/`, `tests/` and `alembic/` layout will be introduced as the corresponding sessions build them; do not create empty placeholders just to match the diagram.
