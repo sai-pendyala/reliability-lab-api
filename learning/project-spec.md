@@ -1,127 +1,102 @@
 # Project Specification — Ledger API Reliability Lab
 
+*Revised 25 November 2026. Companion files: `learning-plan.md`, `progress.json`, `resource-review.md`.*
+
 ## 1. Purpose
 
 Build and operate a small, simulated double-entry ledger API that provides a realistic backend domain for learning PostgreSQL, reliability engineering, container operations, Kubernetes, CI/CD, Terraform and SRE practices.
 
-The project is intended to develop skills relevant to backend engineering and DevOps/SRE roles. It is a learning system, not a banking product and not a production reference architecture.
+It develops skills relevant to backend engineering and DevOps/SRE roles. It is a learning system, not a banking product and not a production reference architecture.
 
 **No real money, payment rails, customer information, card data or banking integrations are involved.**
 
 ## 2. Core outcomes
 
-By the end of the programme, the learner should be able to:
+By the end of the programme, the learner can:
 
 1. Explain HTTP request/response behaviour and design a clear API contract.
 2. Build a typed FastAPI service with validation and predictable error behaviour.
-3. Model relational data in PostgreSQL and use transactions, constraints, locks and migrations.
+3. Model relational data in PostgreSQL and use transactions, constraints, row locks and migrations.
 4. Implement atomic double-entry transfers and idempotent request handling.
-5. Test domain logic and API/database behaviour with pytest.
+5. Test domain logic and API/database behaviour with pytest, including a race condition.
 6. Build and operate the service with Docker and Compose.
-7. Deploy the API and one PostgreSQL instance to a local single-node k3d cluster.
+7. Deploy the API and one PostgreSQL instance to a local single-node k3d cluster and operate it.
 8. Diagnose Linux process, resource, filesystem, DNS, port and connection failures.
 9. Automate tests and image publishing with GitHub Actions.
-10. Provision and destroy a temporary cloud host using Terraform.
-11. Instrument service metrics, query them with PromQL, build Grafana dashboards and alert on SLO burn.
-12. Investigate incidents, verify recovery and produce concise postmortem reports.
+10. Provision and destroy a temporary cloud host with Terraform and verify the cleanup.
+11. Instrument metrics, query them with PromQL, build Grafana dashboards and alert on SLO burn.
+12. Investigate incidents, verify recovery and write concise postmortems.
 
 ## 3. Domain model and invariants
 
 ### Account
 
-Suggested fields:
 - `id`: stable UUID
-- `name`: account display name
-- `currency`: three-character currency code
-- `balance_minor`: integer balance in the currency's minor unit
+- `name`: display name
+- `currency`: three-character code
+- `balance_minor`: **BIGINT** balance in the currency's minor unit
 - timestamps
 
-Use integers for money (for example, paise), never floating-point arithmetic. Keep the first version single-currency per transfer; do not implement foreign exchange.
+Use integers for money (for example, paise), never floating point. PostgreSQL `INTEGER` holds at most 2,147,483,647, which is about ₹21.5 million expressed in paise, so use `BIGINT`. Add `CHECK` constraints so a balance cannot go negative and amounts are positive. Keep each transfer single-currency; no foreign exchange.
 
 ### Transfer
 
-Suggested fields:
-- `id`: stable transfer identifier
-- `source_account_id` and `destination_account_id`
-- `amount_minor`: positive integer
-- `currency`
-- status and timestamps
-- the idempotency record/reference used for request replay
+- `id`, `source_account_id`, `destination_account_id`
+- `amount_minor`: positive BIGINT
+- `currency`, status, timestamps
+- a reference to the idempotency record
 
 ### LedgerEntry
 
-Each successful transfer posts two immutable entries:
-- one debit for the source account
-- one credit for the destination account
-
-The debit and credit must have the same absolute amount and currency. The sum of debits and credits for a transfer must balance. Do not edit or delete a posted entry. Reversals, if explored later, should be represented by compensating entries rather than rewriting history.
+Each successful transfer posts two immutable entries: a debit for the source and a credit for the destination, with the same absolute amount and currency. Never edit or delete a posted entry. Corrections are compensating entries.
 
 ### IdempotencyRecord
 
-Persist the `Idempotency-Key` header and a stable fingerprint of the request. Within the chosen scope:
-- An identical retry with the same key returns the original transfer result and does not post a second transfer.
-- Reusing the same key with a different request payload returns a conflict.
-- The key must be protected by a database uniqueness constraint.
-- Do not put idempotency keys or account IDs into metric labels.
+Persist the `Idempotency-Key` header and a fingerprint of the request. Within the chosen scope:
+
+- An identical retry returns the original transfer result and does not post a second transfer.
+- The same key with a different payload returns a conflict (409).
+- A database uniqueness constraint enforces the key, not an application check alone.
+- Never put idempotency keys or account IDs into metric labels or logs.
 
 ## 4. API surface
-
-The first version should remain deliberately small:
 
 | Method | Path | Purpose |
 |---|---|---|
 | POST | `/accounts` | Create an account |
 | GET | `/accounts` | List accounts |
-| GET | `/accounts/{account_id}` | Retrieve account and current balance |
-| GET | `/accounts/{account_id}/entries` | Retrieve a paginated immutable ledger history |
+| GET | `/accounts/{account_id}` | Retrieve an account and its balance |
+| GET | `/accounts/{account_id}/entries` | Paginated immutable ledger history |
 | POST | `/transfers` | Create a transfer; requires `Idempotency-Key` |
 | GET | `/transfers/{transfer_id}` | Retrieve a posted transfer |
-| GET | `/healthz` | Process liveness |
+| GET | `/healthz` | Process liveness only |
 | GET | `/readyz` | Application and database readiness |
-| GET | `/metrics` | Prometheus metrics, added later |
+| GET | `/metrics` | Prometheus metrics (D51) |
 
-Do not add PATCH or DELETE operations for posted transfers or ledger entries. Account updates, authentication, authorisation, FX, fees, reconciliation and real payment integration are outside the core scope.
+Do not add PATCH or DELETE for posted transfers or ledger entries. Authentication, authorisation, FX, fees, reconciliation and real payment integration are out of scope.
 
-### Error behaviour to define and test
-
-- malformed request or non-positive amount
-- unknown account
-- source and destination are the same
-- currency mismatch
-- insufficient funds
-- idempotency key reused with a different payload
-- unexpected database or application failure
-
-Choose HTTP status codes deliberately and keep the response body consistent. Do not reveal internal database details or secrets in errors.
+Define and test one consistent error body (RFC 9457 problem details is a good model) for: malformed request, non-positive amount, unknown account, same source and destination, currency mismatch, insufficient funds, idempotency conflict and unexpected failure. Never reveal SQL, stack traces or secrets in errors.
 
 ## 5. Database architecture — PostgreSQL
 
-PostgreSQL is the only application database in the core project. SQLite is not part of this architecture.
+PostgreSQL is the only application database. SQLite is not part of the architecture.
 
-Use SQLModel/SQLAlchemy with PostgreSQL and a supported PostgreSQL driver. Use Alembic for schema migrations.
+Use SQLModel (a layer over SQLAlchemy), a PostgreSQL driver such as psycopg 3 and Alembic. SQLModel does not document everything you need; `FOR UPDATE` row locks and `INSERT ... ON CONFLICT` are SQLAlchemy and PostgreSQL features, so read those documentation pages.
 
-Core learning topics:
-- tables, primary/foreign keys, unique constraints and indexes
-- request-scoped sessions and transaction boundaries
-- atomic transfer posting
-- rollback on any failed step
-- unique idempotency keys and request fingerprints
-- transaction isolation and row-level locking
-- test database isolation and migration upgrade/downgrade
+Learning topics: tables, keys, unique and CHECK constraints, request-scoped sessions, transaction boundaries, atomic posting, rollback on any failure, unique idempotency keys, isolation levels, row-level locking, migrations and test-database isolation.
 
-A transfer must be processed as one database transaction. Record the transfer, debit entry, credit entry and balance changes together. If any operation fails, roll back all of them. Use a consistent account-lock ordering or an appropriate database strategy to reduce deadlock risk. Test competing transfers so an account cannot become overdrawn because of a race.
+A transfer is one database transaction: record the transfer, the debit entry, the credit entry and both balance changes together; if anything fails, roll back everything. Lock both account rows in a consistent order (for example ascending ID) to reduce deadlock risk. Test competing transfers so an account cannot be overdrawn.
 
-The initial schema may keep a cached account balance for practical API responses, provided it is updated in the same transaction as the immutable ledger entries and the tests prove the invariant. Document that design choice.
+A cached balance on the account is acceptable if it is updated in the same transaction as the immutable entries and the tests prove the invariant. Document that design choice.
 
 ## 6. Application structure and quality
 
-Keep the application small and readable. A possible structure as it grows:
+Keep the application small and readable:
 
 ```text
 app/
   main.py
-  api/
-    routes/
+  routers/
   schemas/
   models/
   services/
@@ -130,165 +105,107 @@ tests/
 alembic/
 ```
 
-Do not create empty layers without a use. Keep route handlers thin, put transfer rules in a testable service/domain function and keep database operations explicit.
+Keep route handlers thin, put transfer rules in a testable service function and keep database operations explicit.
 
-Required quality work:
-- Pydantic request/response schemas
-- pytest unit tests for domain rules
-- FastAPI TestClient endpoint tests
-- PostgreSQL integration tests against an isolated test database
-- rollback and duplicate-idempotency tests
-- configuration through environment variables
-- structured logs without sensitive information
-- `/healthz` and database-aware `/readyz`
+Required quality work: Pydantic request and response schemas; pytest unit tests for domain rules; TestClient tests against an isolated PostgreSQL test database built from the migrations; rollback, duplicate-idempotency and race-condition tests; configuration through environment variables; structured JSON logs with a request ID and no sensitive values; `/healthz` and a database-aware `/readyz`; Ruff in CI.
 
 ## 7. Docker and Compose
 
-Build the API image using a small supported Python base image, a clear start command, a non-root user where practical and a `.dockerignore`.
+Build the image from a supported Python base image with a clear start command, a non-root user where practical and a `.dockerignore`. Use the current FastAPI container guidance; do not use the deprecated tiangolo/uvicorn-gunicorn-fastapi image.
 
-Compose should run:
-- the Ledger API
-- one PostgreSQL service
-- an internal application/database network
-- a named PostgreSQL data volume
-- appropriate health checks and configuration
+Compose runs the API and one PostgreSQL service on an internal network with a named data volume, a PostgreSQL health check, health-based startup ordering and migrations as a one-off step. Prove service-name DNS, published-port behaviour, persistence across container replacement and teardown without deleting the volume by accident.
 
-Prove service-name DNS, host-published port behaviour, database persistence across container replacement and safe teardown without deleting the data volume unintentionally.
-
-PostgreSQL must not be exposed publicly. Do not commit real database passwords.
+PostgreSQL must not be published to the host or the internet by default. Do not commit real passwords.
 
 ## 8. Kubernetes with k3d
 
-Use the existing Colima runtime and one local k3d server node. Deploy:
-- the API as a Deployment (stateless; may scale to two replicas for practice)
-- PostgreSQL as one StatefulSet/instance with a PersistentVolumeClaim for the learning exercise
-- ClusterIP Services for internal communication
-- ConfigMaps for non-sensitive settings and fake Secrets for disposable credentials
-- liveness/readiness/startup probes where appropriate
-- modest CPU/memory requests and limits
-- a least-privilege ServiceAccount/Role/RoleBinding exercise
+Use the existing Colima runtime and one k3d server node. Deploy:
 
-Keep PostgreSQL at one instance. The local PVC is not a backup or HA design. Practise `pg_dump` and restore separately. Do not share one PostgreSQL data directory between multiple Pods.
+- the API as a Deployment (stateless; two replicas for practice)
+- PostgreSQL as one StatefulSet instance with a PersistentVolumeClaim
+- migrations as a Kubernetes Job
+- ClusterIP Services, a ConfigMap for non-sensitive settings and a Secret with fake disposable credentials
+- liveness, readiness and startup probes against `/healthz` and `/readyz`
+- modest CPU and memory requests and limits
+- a least-privilege ServiceAccount, Role and RoleBinding exercise
 
-The cluster is a learning topology only. Do not describe it as production-ready.
+Keep PostgreSQL at one instance; do not share one data directory between Pods. A local PVC is not a backup: practise `pg_dump` and restore separately. This is a learning topology, not production.
+
+In-cluster monitoring is out of scope on an 8 GB Mac; observability is practised in Compose.
 
 ## 9. Linux and networking troubleshooting
 
-Use a disposable Linux container or browser lab for destructive exercises. Practise evidence-led diagnosis of:
-- process and CPU/memory problems (`ps`, `top`)
-- disk capacity and inode exhaustion (`df -h`, `df -i`)
-- ownership and permission errors
-- port conflicts and listening sockets (`ss`, `lsof`)
-- DNS lookup failures (`dig`, `getent`)
-- connection refused vs timeout vs name-resolution failure
-- service/container logs and startup failures
-
-Collect evidence before changing configuration. Record symptom, commands, evidence, likely cause, fix and verification.
+Use a disposable Linux container for destructive exercises and a script that applies a fault without telling you which. Practise evidence-led diagnosis of process and resource problems (`ps`, `top`, the USE method), disk and inode exhaustion (`df`), ownership and permissions, port conflicts (`ss`), and DNS (`getent`, `dig`) and connection failures, including telling a DNS failure from a refused connection from a timeout. Collect evidence before changing anything; record symptom, commands, evidence, cause, fix and verification.
 
 ## 10. Git, CI/CD and container publishing
 
-The project should use a practical Git change workflow: inspect status/diff, work on a focused branch, commit coherent changes, review and merge. Publishing the application source to the public repository happens at the planned source-control milestone, not in the initial environment session.
+Commit and push from D2; use a private repository for work-in-progress code if you prefer. GitHub Actions starts at D22 and image publishing at D30.
 
-GitHub Actions should:
-1. run on pushes and pull requests
-2. set up the chosen Python version
-3. start PostgreSQL as a workflow service for integration tests
-4. install dependencies and run pytest
-5. run Ruff lint/format checks
-6. build the Docker image after successful quality checks
-7. publish a versioned image to GHCR with minimal `GITHUB_TOKEN` permissions
+The CI workflow runs on pushes and pull requests, sets up Python, starts PostgreSQL as a service container with a health check, runs migrations, Ruff and pytest, and fails on any error. After tests pass it builds the image and publishes it to GHCR tagged with the commit SHA using minimal `GITHUB_TOKEN` permissions. Check the package visibility: a private image needs a credential on any host that pulls it.
 
-A later deployment workflow should be manually gated and use least-privilege short-lived identity. Prefer GitHub Actions OIDC with AWS IAM/Systems Manager rather than storing long-lived AWS access keys. If that scope is too large, document the manual release and do not weaken credential handling to make automation appear complete.
+A deployment workflow, if built, is manually gated and uses GitHub Actions OIDC with a least-privilege AWS role; no long-lived AWS keys in GitHub or the repository. If that is out of scope, document the manual release; do not weaken credential handling to make automation look complete.
 
-## 11. Infrastructure as code and temporary AWS deployment
+Add a link checker (lychee) to CI so documentation links do not rot.
 
-Use Terraform to create a small temporary EC2 learning host and the minimum network/access resources needed. Deploy the API and PostgreSQL on that host using Docker Compose.
+## 11. Infrastructure as code and the temporary AWS deployment
 
-This is intentionally a **single-host deployment**, not a highly available cloud architecture. It demonstrates provisioning, Linux operations, container deployment, network boundaries, cloud logs, controlled rollout and cleanup. It does not demonstrate production database HA or autoscaling.
+Terraform creates one small EC2 host, the minimum security-group rules and an instance profile for Session Manager. The API and PostgreSQL run on it with Docker Compose. This is a single-host deployment, not high availability. It demonstrates provisioning, Linux operations, container deployment, network boundaries, cloud logs, a controlled rollout and cleanup.
 
 Required safeguards:
-- do not assume AWS free-tier eligibility or zero cost
-- estimate resource costs before provisioning
-- select region and instance size only after reviewing the estimate
-- restrict SSH/admin ingress to the learner's IP or use Systems Manager
-- never expose PostgreSQL publicly
-- avoid NAT gateways, load balancers, RDS and EKS for this small exercise
-- set a time/spend limit
-- keep credentials and Terraform state out of the public repository
-- run `terraform destroy` and verify the instance, volumes, public IP and other resources are removed
 
-If the learner does not have an AWS account or does not approve potential charges, complete the Terraform plan and a local deployment simulation, mark the real-cloud outcome as deferred, and do not create resources.
+- Create a budget alert before provisioning anything; estimate with the pricing calculator; do not assume free-tier eligibility.
+- Do not use the root user; enable MFA; no long-lived keys in a repository.
+- Use Session Manager for access and port forwarding; no inbound SSH rule.
+- Never expose PostgreSQL. Avoid NAT gateways, load balancers, RDS and EKS.
+- Decide how the host pulls the image (public package, or an interactive login with a least-privilege token that is never stored).
+- Keep state, credentials and tfvars out of Git. Run `terraform destroy` and verify in the console that every resource is gone.
+
+If you have no AWS account or do not approve potential charges, complete the plan and a local simulation, mark the real-cloud outcome as deferred and create nothing.
 
 ## 12. Observability and SRE
 
-### Core: Prometheus and Grafana
+### Core: Prometheus, Grafana and traffic
 
-Instrument:
-- request count
-- request duration histogram
-- transfer success/failure counts with bounded outcome labels
+Instrument a request counter, a duration histogram and a bounded transfer-outcome counter. Never label metrics with account IDs, transfer IDs, request IDs or idempotency keys. Use Locust to send steady traffic, including some failures; without traffic the graphs and burn-rate alerts are empty.
 
-Never label metrics with account IDs, transfer IDs, request IDs, idempotency keys or other unbounded values.
+Run Prometheus, Grafana, the alert sink and Locust in Docker Compose behind a profile. Scrape at about 15–30 seconds. Write PromQL for request rate, 5xx ratio, transfer failure ratio, latency quantiles and target health.
 
-Configure Prometheus scraping and write PromQL for:
-- request rate
-- 5xx ratio
-- transfer failure ratio
-- latency histogram quantiles
-- target availability
+### SLIs, SLOs and burn-rate alerts
 
-Use Grafana for dashboards and alert investigation.
+Define availability and latency SLIs, choose explicit learning SLOs with a short lab window, calculate the error budget, and record the SLI ratios over several short windows with Prometheus recording rules. Grafana-managed alert rules evaluate fast and slow burn and send notifications to a webhook contact point that points at a tiny FastAPI alert-sink service. Use one alerting system. Explain why low traffic makes ratio alerts noisy. The lab proves nothing about production reliability.
 
-### SLI, SLO and burn-rate work
+### Logs and traces — optional
 
-Define learning-only availability and latency SLIs, choose explicit SLO targets and a measurement window, calculate the error budget and implement a multi-window burn-rate alert. Explain how a fast burn differs from a slow sustained burn and why low traffic can make request-ratio alerts noisy.
-
-The values are instructional. Do not claim the short lab's uptime proves production reliability. Use the [Google SRE Workbook: alerting on SLOs](https://sre.google/workbook/alerting-on-slos/) as the reference for multi-window, multi-burn-rate thinking.
-
-### Logs and traces — optional extensions
-
-Core logging is structured application output to stdout plus reading Docker, Kubernetes and cloud logs.
-
-Optional additions:
-- **Loki/Alloy:** collect container logs and explore LogQL.
-- **OpenTelemetry/Jaeger:** instrument one service and inspect traces/spans.
-
-Choose one extension first; stop it after the lab. Do not run every observability backend together on the 8 GB Mac.
+Core logging is structured stdout plus reading Docker, Kubernetes and cloud logs. Optionally explore Loki/Alloy or OpenTelemetry/Jaeger, one at a time, and stop it afterwards.
 
 ## 13. Incident exercises
 
-All fault injection is local or in the temporary isolated cloud lab, reversible and followed by verification. Never leave a deliberately broken configuration as the final state.
+All fault injection is local (or in the temporary isolated cloud lab), reversible and verified afterwards. Never leave a deliberately broken configuration as the final state. A script that does not reveal the fault is better than one you wrote yourself.
 
-Required incidents:
-1. **Target unavailable:** stop the API or database; detect, restore and prove recovery.
-2. **Elevated HTTP 5xx:** inject a temporary transfer failure; inspect metrics/logs and prove ledger invariants remain intact.
-3. **Elevated latency:** cause a controlled slow operation; diagnose using latency metrics, application logs and database evidence.
-4. **Independent drill:** select a safe scenario such as duplicate transfer, database outage, bad deployment or network failure; investigate without a step-by-step guide.
+1. **Dependency unavailable:** stop the API or database; detect, restore and prove recovery.
+2. **Elevated 5xx:** inject a temporary transfer failure; investigate with metrics and logs and prove ledger invariants.
+3. **Elevated latency:** cause a slow operation; diagnose with latency metrics, logs and database activity.
+4. **Independent drill:** a script applies a safe fault; investigate without a guide.
 
-Each report includes impact, detection, timeline, evidence, root cause, mitigation, recovery verification and prevention/follow-up actions.
+Each report covers impact, detection, timeline, evidence, cause, mitigation, recovery verification and prevention.
 
 ## 14. Hardware and resource limits
 
-The development machine is an Apple Silicon Mac with 8 GB RAM. Use Colima; do not install Docker Desktop for this programme.
+Apple Silicon Mac with 8 GB RAM, using Colima (no Docker Desktop): one k3d server node, one PostgreSQL instance, Prometheus and Grafana as the required observability core, Loki/Alloy or Jaeger only as separate optional exercises, and no full OpenTelemetry demo stack. Check Colima's CPU and memory allocation before creating the cluster.
 
-- one-node k3d cluster
-- one PostgreSQL instance
-- modest Prometheus scrape frequency (about 15–30 seconds)
-- Prometheus/Grafana as the required observability core
-- Loki/Alloy or Jaeger as separate optional exercises
-- no full OpenTelemetry demo stack locally
+## 15. Out of scope for the 12 weeks
 
-The temporary AWS environment is cost-controlled, and the cleanup session is mandatory.
-
-## 15. Explicitly out of scope for this 12-week programme
-
-- real payment gateways or real funds
-- authentication/authorisation suitable for real customers
-- foreign exchange, fees, reconciliation and regulatory controls
-- production database high availability or multi-region deployment
+- real payments or funds
+- authentication and authorisation suitable for real customers
+- foreign exchange, fees and reconciliation
+- database high availability or multi-region deployment
 - Kubernetes control-plane administration or production EKS
-- a full enterprise GitOps platform
-- Go language fundamentals (possible next phase after the core programme)
+- in-cluster monitoring and GitOps platforms
+- Go language fundamentals
 - mastery of every observability backend
 
-The goal is a demonstrable learning project with defensible engineering decisions, tests, dashboards, incident reports and honest limitations.
+## 16. Suggested next phase (after 13 February 2027)
+
+A second block that closes the remaining backend gaps: Redis caching, a background worker with an outbox pattern, authentication and rate limiting, and rewriting the transfer service in Go using The Go Engineer.
+
+The goal is a demonstrable project with defensible engineering decisions, tests, dashboards, incident reports and honest limitations.
