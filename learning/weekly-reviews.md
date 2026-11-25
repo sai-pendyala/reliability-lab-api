@@ -1,191 +1,204 @@
-## Week 1 — HTTP foundations and ledger API setup
+## Week 1 review — HTTP foundations and Ledger API design
 
 **Date:** 2026-11-29 · **Time:** 20 minutes  
-**Expected outcome:** Set up the local lab and explain HTTP requests, methods, status codes and retry/idempotency basics.
+**Expected outcome:** Explain HTTP requests, methods, idempotency and status codes; the API contract is written; the D1 project is on GitHub.
 
 ### Review checklist
-- [ ] Link HTTP notes and verify local environment.
-- [ ] Can I explain request/response anatomy, methods, status codes and idempotency?
-- [ ] What did I verify with a real request?
-- [ ] What remains unclear?
-- [ ] Did I stay close to 60 minutes?
+
+- [ ] Link the contract file and the GitHub repository.
+- [ ] Can I explain request/response anatomy, safe versus idempotent methods and why transfers need an idempotency key?
+- [ ] Is every error case mapped to a status code and body shape?
+- [ ] What was verified with a real curl request?
+- [ ] Did I stay close to 60 minutes per session?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 2 — Ledger API contract and FastAPI fundamentals
+## Week 2 review — FastAPI fundamentals (in-memory) and the first PostgreSQL container
 
 **Date:** 2026-12-06 · **Time:** 20 minutes  
-**Expected outcome:** Design account/transfer API contract and create typed FastAPI routes and schemas.
+**Expected outcome:** Typed account endpoints with validation and consistent errors work in memory, and a PostgreSQL container runs with a named volume.
 
 ### Review checklist
-- [ ] Link ledger-api-contract.md and FastAPI routes/docs.
-- [ ] Can I explain each resource, route, path/query parameter and request schema?
-- [ ] Can I use /docs and inspect /openapi.json?
-- [ ] Can I explain why transfers are immutable and retries need idempotency?
-- [ ] What would I simplify?
+
+- [ ] Link the routes, /docs and the Docker command note.
+- [ ] Can I explain path, query and body parameters and the response models?
+- [ ] Do all error cases return the agreed shape?
+- [ ] Can I explain image versus container and the named volume?
+- [ ] What should be simplified before the database arrives?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 3 — Ledger API behaviour and in-memory transfers
+## Week 3 review — PostgreSQL persistence, migrations and atomic transfers
 
 **Date:** 2026-12-13 · **Time:** 20 minutes  
-**Expected outcome:** Implement account operations and a validated transfer flow before persistence.
+**Expected outcome:** The API persists to PostgreSQL through migrations and posts atomic double-entry transfers.
 
 ### Review checklist
-- [ ] Link account/transfer examples and manual tests.
-- [ ] Can I create accounts and make a valid transfer?
-- [ ] Do insufficient-funds and currency errors behave predictably?
-- [ ] Are balances and ledger entries consistent?
-- [ ] What needs database persistence?
 
-**Completed:** No  
-**Evidence / notes:**
-
-
-## Week 4 — PostgreSQL and persistence
-
-**Date:** 2026-12-20 · **Time:** 20 minutes  
-**Expected outcome:** Model relational data and persist accounts, transfers and ledger history in PostgreSQL.
-
-### Review checklist
-- [ ] Link PostgreSQL schema, models and session dependency.
-- [ ] Can I explain tables, keys, constraints and request-scoped sessions?
-- [ ] Does account data survive an API restart?
-- [ ] Can I inspect data with SQL?
+- [ ] Link schema.sql, the models and the first migration.
+- [ ] Can I explain the engine, session, transaction and rollback?
+- [ ] Does a forced failure leave balances and entries unchanged?
+- [ ] Does data survive an API restart?
 - [ ] Which database concept needs another pass?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 5 — Transactions, idempotency and tests
+## Week 4 review — Idempotency, tests, concurrency and CI
+
+**Date:** 2026-12-20 · **Time:** 20 minutes  
+**Expected outcome:** Idempotent transfers, unit and integration tests, a race-condition test and a passing CI workflow exist.
+
+### Review checklist
+
+- [ ] Link the idempotency evidence, test results and a green CI run.
+- [ ] Does an identical retry create exactly one transfer and a changed payload return 409?
+- [ ] Do competing transfers fail safely instead of overdrawing?
+- [ ] Is readiness database-aware and are logs free of secrets?
+- [ ] What failure still needs a test?
+
+**Completed:** No  
+**Evidence / notes:** 
+
+
+## Week 5 review — Docker and Compose
 
 **Date:** 2026-12-27 · **Time:** 20 minutes  
-**Expected outcome:** Guarantee atomic double-entry transfers; add idempotency, migrations and tests.
+**Expected outcome:** The API is containerised and runs with PostgreSQL under Compose with persistence and a safe network setup.
 
 ### Review checklist
-- [ ] Link migrations, tests and idempotency/rollback evidence.
-- [ ] Can I explain a transaction boundary and rollback?
-- [ ] Does an identical retry avoid a duplicate transfer?
-- [ ] Do tests prove the ledger stays balanced?
-- [ ] What failure needs another test?
+
+- [ ] Link the Dockerfile, compose.yaml and troubleshooting note.
+- [ ] Can I build, run and inspect the image?
+- [ ] Does the API reach PostgreSQL by service name while PostgreSQL stays unpublished?
+- [ ] Does data survive docker compose down?
+- [ ] What did the planted failures teach me?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 6 — Health, logging and Docker foundations
+## Week 6 review — Image publishing and Kubernetes fundamentals
 
 **Date:** 2027-01-03 · **Time:** 20 minutes  
-**Expected outcome:** Harden the service, build an image, understand container lifecycle and persist PostgreSQL data.
+**Expected outcome:** CI publishes a SHA-tagged image; a k3d cluster runs the API with a Service.
 
 ### Review checklist
-- [ ] Link health endpoints, Dockerfile, Compose and volume evidence.
-- [ ] Can I build and inspect an image?
-- [ ] Does the API connect to PostgreSQL by service name?
-- [ ] Does data survive container replacement?
-- [ ] What will I practise in Kubernetes?
+
+- [ ] Link the workflow run and the GHCR package.
+- [ ] Can I explain Pod, Deployment, ReplicaSet and Service?
+- [ ] Can I diagnose an empty endpoints list?
+- [ ] Is the package visibility decision recorded?
+- [ ] What differed between the browser lab and the local cluster?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 7 — Compose networking and Kubernetes fundamentals
+## Week 7 review — Kubernetes with PostgreSQL
 
 **Date:** 2027-01-10 · **Time:** 20 minutes  
-**Expected outcome:** Run API/PostgreSQL with Compose and deploy the service stack to local k3d.
+**Expected outcome:** API and PostgreSQL run in k3d with ConfigMap, Secret, PVC, migration Job, scaling and rollback.
 
 ### Review checklist
-- [ ] Link Compose network and Kubernetes manifests.
-- [ ] Can I explain Pod, Deployment, StatefulSet and Service?
-- [ ] Can API resolve PostgreSQL inside cluster?
-- [ ] Can I perform rollout/rollback safely?
-- [ ] What differed between browser and local labs?
+
+- [ ] Link the manifests and rollout evidence.
+- [ ] Why is PostgreSQL one replica while the API can scale?
+- [ ] Does the migration Job work from a clean namespace?
+- [ ] Are all credentials fake and kept out of Git?
+- [ ] What would a production database need that this does not have?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 8 — Kubernetes operations and Linux troubleshooting
+## Week 8 review — Kubernetes operations, RBAC and Linux troubleshooting
 
 **Date:** 2027-01-17 · **Time:** 20 minutes  
-**Expected outcome:** Operate probes, resources, storage and RBAC; diagnose Linux host and network failures.
+**Expected outcome:** Probes, resources, backup/restore, RBAC and Linux/DNS troubleshooting are demonstrated with evidence.
 
 ### Review checklist
-- [ ] Link Kubernetes runbook and Linux failure matrix.
-- [ ] Can I diagnose process, disk, permissions, DNS and port failures?
-- [ ] Can I explain probes, resources, storage and RBAC?
-- [ ] What evidence proved root cause?
-- [ ] Which issue needs guided practice?
+
+- [ ] Link the failure matrix, networking checklist and runbook.
+- [ ] Can I distinguish liveness, readiness and startup behaviour?
+- [ ] Can I tell DNS failure, connection refused and timeout apart?
+- [ ] Did the backup restore correctly?
+- [ ] Which item should be repeated without notes?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 9 — Git, CI/CD and Terraform foundations
+## Week 9 review — Terraform, AWS foundations and Prometheus metrics
 
 **Date:** 2027-01-24 · **Time:** 20 minutes  
-**Expected outcome:** Use a safe Git workflow, automate Python tests/image publishing and learn Terraform planning.
+**Expected outcome:** Terraform fundamentals are done, the AWS plan is reviewed with a budget alert, and the API exposes metrics under generated traffic.
 
 ### Review checklist
-- [ ] Link Git change history and passing Actions run.
-- [ ] Can I read a workflow and diagnose failed CI?
-- [ ] Does image publish only after tests pass?
-- [ ] Can I explain Terraform plan/state/destroy?
-- [ ] Are secrets and state excluded?
+
+- [ ] Link the Terraform plan, the budget alert and /metrics.
+- [ ] Can I explain state and why it is ignored by Git?
+- [ ] Is every metric label bounded?
+- [ ] Is Prometheus scraping and Locust generating traffic?
+- [ ] Did I avoid creating AWS resources before the review?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 10 — Prometheus, Grafana, SLOs and incident response
+## Week 10 review — SLOs, burn-rate alerts and incident drills
 
 **Date:** 2027-01-31 · **Time:** 20 minutes  
-**Expected outcome:** Build service metrics, PromQL, Grafana dashboards, burn-rate alerts and three incidents.
+**Expected outcome:** An SLO dashboard and burn-rate alerts reach the alert sink and three incident reports are written.
 
 ### Review checklist
-- [ ] Link /metrics, PromQL worksheet, dashboard, SLO and burn-rate alert.
-- [ ] Can I query request rate, 5xx ratio and latency?
+
+- [ ] Link slo.md, the dashboard, alert rules and incident reports 1-3.
 - [ ] Can I explain SLI, SLO, error budget and burn rate?
-- [ ] Are alerts actionable and tested?
-- [ ] Are three incident reports complete?
+- [ ] Do the alerts fire, recover and handle no-data correctly?
+- [ ] Was ledger integrity verified after each incident?
+- [ ] Which alert is not actionable yet?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 11 — Temporary AWS deployment and operations
+## Week 11 review — Temporary AWS deployment and clean-state rebuild
 
 **Date:** 2027-02-07 · **Time:** 20 minutes  
-**Expected outcome:** Provision a small cloud host with Terraform, deploy the stack, troubleshoot and destroy it.
+**Expected outcome:** The stack ran on a temporary AWS host, was destroyed and verified clean, and the README works from a fresh clone.
 
 ### Review checklist
-- [ ] Link Terraform config, deployment diagram and cleanup evidence.
+
+- [ ] Link the Terraform config, cleanup evidence and README fixes.
 - [ ] Can I explain every cloud resource and its cost?
-- [ ] Was access restricted and PostgreSQL kept private?
-- [ ] Did I verify destroy and check leftovers?
-- [ ] What would I change before production?
+- [ ] Was PostgreSQL kept private and access limited to Session Manager?
+- [ ] Did I verify destroy in the console?
+- [ ] What would change before production?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
 
 
-## Week 12 — Independent SRE capstone
+## Week 12 review — Independent investigation and final capstone
 
 **Date:** 2027-02-14 · **Time:** 20 minutes  
-**Expected outcome:** Independently investigate the service, review alerts and present the complete ledger reliability project.
+**Expected outcome:** Independent PromQL, SLO and incident work is complete and the capstone is demonstrable from a clean clone.
 
 ### Review checklist
-- [ ] Link capstone README, dashboard, CI, Terraform and reports.
-- [ ] Can I demonstrate idempotent transfers and atomic double-entry posting?
-- [ ] Can I troubleshoot without a step-by-step guide?
-- [ ] Can I present CI/CD, cloud and SLO decisions clearly?
-- [ ] What can I do independently; what still needs production experience?
+
+- [ ] Link the README, dashboards, CI, Terraform notes and all four incident reports.
+- [ ] Can I investigate without a step-by-step guide?
+- [ ] Can I explain the SLO and alert trade-offs and their limits?
+- [ ] Is the demo reproducible from a clean clone in the time I have?
+- [ ] What can I do independently and what still needs production experience?
 
 **Completed:** No  
-**Evidence / notes:**
+**Evidence / notes:** 
+
 
