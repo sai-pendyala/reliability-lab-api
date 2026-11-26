@@ -46,8 +46,8 @@
     "weekly_reviews": 12,
     "review_minutes": 240
   },
-  "completed_sessions": 2,
-  "completion_percent": 2.8,
+  "completed_sessions": 3,
+  "completion_percent": 4.2,
   "days": [
     {
       "id": "D1",
@@ -152,9 +152,9 @@
       "duration_minutes": 60,
       "extension_minutes": 15,
       "extension_task": "Write the two-sentence explanation of idempotency you would give a teammate.",
-      "status": "not_started",
-      "completed_at": null,
-      "notes": "",
+      "status": "completed",
+      "completed_at": "2026-11-26",
+      "notes": "Completed and verified interactively. Mapped GET /accounts, GET /accounts/{account_id}, GET /transfers/{transfer_id}, and POST /transfers to their purposes and safe/idempotent semantics. Distinguished safe methods from idempotent methods: safe operations do not intend to change application state; idempotent operations have the same intended effect when repeated, even if responses differ. Reviewed GET, POST, PUT, PATCH and DELETE; understood that PATCH may be designed idempotently or non-idempotently and POST is appropriate for creating a transfer as a new business transaction rather than directly updating a balance. Explained timeout ambiguity and why retrying POST without protection can create duplicate transfers. Defined project retry rules: same key and same payload returns original result; same key and different payload returns 409 Conflict; a genuinely new operation gets a new key. Understood need for a database uniqueness constraint to handle concurrent requests racing to claim the same key. Reviewed immutable debit/credit ledger entries and compensating transactions for corrections. Final checkpoint answers correct.",
       "tasks": [
         "Map GET /accounts, GET /accounts/{id}, GET /transfers/{id} and POST /transfers to HTTP methods",
         "Distinguish safe methods from idempotent methods",
@@ -2942,7 +2942,7 @@
       "notes": ""
     }
   ],
-  "last_updated": "2026-11-25",
+  "last_updated": "2026-11-26",
   "migration_note": "Earlier revisions (kept for history): Revised on 2026-11-23 after learner clarified that Python fundamentals are not needed. Rebased on 2026-11-23 for a Tuesday 2026-11-24 start; Sundays remain review/rest days; Week 1 is a five-session kickoff; Weeks 2-12 contain six sessions. Revised on 2026-11-24 after external review: changed generic Task API to a simulated double-entry Ledger API; replaced SQLite with PostgreSQL; added idempotency, atomic transfers, concurrency, Alembic, CI/CD, Terraform, a cost-controlled AWS EC2 deployment, Linux troubleshooting and SLO burn-rate alerts. Revised on 2026-11-25 (schema_version 3): removed duplicated in-memory work and merged HTTP basics; moved the first Docker/PostgreSQL container to D11; pushed code from D2 and moved CI to D22 and GHCR publishing to D30; replaced the Task-API-era extension tasks; added a Locust traffic generator, a single Compose-based observability stack, Grafana-managed burn-rate alerts with a local alert sink, BIGINT money columns, Session Manager instead of SSH, five holiday flex sessions (session_type 'flex') and a 3x30-minute optional DSA track. Preserved all 71 dates, the review cadence and D1 completion evidence.",
   "lab_method": "Use a short free browser lab for Docker (D11) and Kubernetes (D31, D32) as a supplement and reproduce everything locally through Colima and k3d. Browser labs are disposable; the repository is the source of truth.",
   "browser_lab_safety": "Do not enter production credentials, AWS keys, tokens or personal data into public labs. Use fake database passwords in local examples.",
