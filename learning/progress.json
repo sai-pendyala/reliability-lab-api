@@ -46,8 +46,8 @@
     "weekly_reviews": 12,
     "review_minutes": 240
   },
-  "completed_sessions": 3,
-  "completion_percent": 4.2,
+  "completed_sessions": 4,
+  "completion_percent": 5.6,
   "days": [
     {
       "id": "D1",
@@ -188,9 +188,9 @@
       "duration_minutes": 60,
       "extension_minutes": 0,
       "extension_task": null,
-      "status": "not_started",
-      "completed_at": null,
-      "notes": "",
+      "status": "completed",
+      "completed_at": "2026-11-27",
+      "notes": "Completed and verified interactively. Reviewed HTTP status-code classes and 2xx, 4xx and 5xx examples; distinguished 400 malformed request, 404 resource not found, 409 conflict, 422 semantically invalid content, and 500/503 server failures. Designed the Ledger API mapping for eight required failure cases: malformed JSON 400, non-positive amount 422, unknown account 404, same source/destination 422, currency mismatch 422, insufficient funds 409, idempotency key reused with changed payload 409, unexpected application failure 500. Defined a consistent RFC 9457 Problem Details response using application/problem+json, standard type/title/status/detail members and application-specific stable code extension. Confirmed HTTP status line and JSON status must agree; client code should branch on stable codes rather than parse detail text; detailed SQL exceptions and stack traces stay in protected server logs, while clients receive safe generic 500 responses. Reviewed FastAPI exception and validation handler customisation conceptually; no implementation yet.",
       "tasks": [
         "Review 2xx, 4xx and 5xx groups and the difference between 400, 404, 409 and 422",
         "Choose a status code for each Ledger API failure case",
@@ -2942,7 +2942,7 @@
       "notes": ""
     }
   ],
-  "last_updated": "2026-11-26",
+  "last_updated": "2026-11-27",
   "migration_note": "Earlier revisions (kept for history): Revised on 2026-11-23 after learner clarified that Python fundamentals are not needed. Rebased on 2026-11-23 for a Tuesday 2026-11-24 start; Sundays remain review/rest days; Week 1 is a five-session kickoff; Weeks 2-12 contain six sessions. Revised on 2026-11-24 after external review: changed generic Task API to a simulated double-entry Ledger API; replaced SQLite with PostgreSQL; added idempotency, atomic transfers, concurrency, Alembic, CI/CD, Terraform, a cost-controlled AWS EC2 deployment, Linux troubleshooting and SLO burn-rate alerts. Revised on 2026-11-25 (schema_version 3): removed duplicated in-memory work and merged HTTP basics; moved the first Docker/PostgreSQL container to D11; pushed code from D2 and moved CI to D22 and GHCR publishing to D30; replaced the Task-API-era extension tasks; added a Locust traffic generator, a single Compose-based observability stack, Grafana-managed burn-rate alerts with a local alert sink, BIGINT money columns, Session Manager instead of SSH, five holiday flex sessions (session_type 'flex') and a 3x30-minute optional DSA track. Preserved all 71 dates, the review cadence and D1 completion evidence.",
   "lab_method": "Use a short free browser lab for Docker (D11) and Kubernetes (D31, D32) as a supplement and reproduce everything locally through Colima and k3d. Browser labs are disposable; the repository is the source of truth.",
   "browser_lab_safety": "Do not enter production credentials, AWS keys, tokens or personal data into public labs. Use fake database passwords in local examples.",
